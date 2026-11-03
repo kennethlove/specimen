@@ -44,7 +44,11 @@ fn tags_scope_bad_marker_warns() {
     assert_eq!(code, 0, "warning only, exit 0, stderr: {stderr}");
     let v: serde_json::Value = serde_json::from_str(&stdout).expect("JSON");
     let claims = v.as_array().expect("array");
-    assert_eq!(claims[0]["scope"], serde_json::json!([]), "bad marker -> []");
+    assert_eq!(
+        claims[0]["scope"],
+        serde_json::json!([]),
+        "bad marker -> []"
+    );
     assert_eq!(claims[0]["tags"], serde_json::json!([]), "no tags either");
     assert!(
         stderr.contains("badmarker.md:3") && stderr.contains("bad marker"),
