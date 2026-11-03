@@ -1,0 +1,57 @@
+story_id: e03s01
+verified_at: '2026-11-03T21:15:00Z'
+verifier: verify-work
+phases:
+  smoke:
+    command: "test -f skills/grill/SKILL.md"
+    exit_code: 0
+    note: skill file exists at the agent-agnostic path
+  build:
+    command: cargo check
+    exit_code: 0
+  typecheck:
+    command: cargo check
+    exit_code: 0
+    note: no new Rust code in this story; suite compiles clean
+  lint:
+    command: cargo clippy --all-targets
+    exit_code: 0
+    note: no issues found (markdown-only feature)
+  tests:
+    command: sh tests/grill.sh
+    exit_code: 0
+    note: e03s01 + e03s02 verifies all green
+  terminal_verdict:
+    command: cargo test
+    exit_code: 0
+    captured_at: '2026-11-03T21:15:00Z'
+    note: >-
+      single contiguous run: 0 doc / 12 cli / 2 tags passed,
+      0 failed
+  manual:
+    steps:
+      - step: skill exists at skills/grill/SKILL.md
+        expected: file present
+        actual: present, 3.9K, frontmatter + procedure
+        passed: true
+      - step: batch questions cover the four categories
+        expected: fields, callers, failure modes, scope
+        actual: section Procedure step 2 lists all four categories
+        passed: true
+      - step: emitted claim format parses with specimen
+        expected: exit 0, JSON claim with scope/tags arrays
+        actual: >-
+          printf skill-format claim to /tmp/grill-sample.md;
+          cargo run -q -- parse -> [{"check":"ls","id":"C1",
+          "scope":["cli"],"tags":["test"]}], parse-exit=0
+        passed: true
+      - step: claim rules self-contained (no runtime dependency)
+        expected: EARS, RFC 2119, tag taxonomy inlined
+        actual: "Claim rules section carries all four bullet groups"
+        passed: true
+gaps:
+  closed: true
+  notes:
+    - >-
+      NFR gate (TEST_PLAN) skipped: e03 stories carry risks
+      P1/P2/P3, no P0 in this epic per plan-work risk heuristics.
