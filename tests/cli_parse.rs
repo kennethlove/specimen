@@ -41,3 +41,21 @@ fn parse_warns_on_missing_check() {
         "warning names file and line, stderr: {stderr}"
     );
 }
+
+#[test]
+fn parse_rejects_duplicate_id() {
+    let (stdout, stderr, code) = run(&["parse", "tests/fixtures/dup.md"]);
+    assert_eq!(code, 1, "expected exit 1, stderr: {stderr}");
+    assert!(stdout.is_empty(), "no JSON on stdout, got: {stdout}");
+    assert!(stderr.contains("duplicate"), "stderr: {stderr}");
+    assert!(stderr.contains("dup.md:3"), "stderr: {stderr}");
+    assert!(stderr.contains("line 2"), "stderr: {stderr}");
+}
+
+#[test]
+fn parse_missing_file() {
+    let (stdout, stderr, code) = run(&["parse", "tests/fixtures/nope.md"]);
+    assert_eq!(code, 1, "expected exit 1, stderr: {stderr}");
+    assert!(stdout.is_empty(), "no JSON on stdout, got: {stdout}");
+    assert!(stderr.contains("error"), "stderr: {stderr}");
+}
