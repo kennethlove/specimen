@@ -46,6 +46,27 @@ pass, or when asked to produce a conformance report.
    `1` = at least one check failed, `2` = input error (report the
    stderr message verbatim).
 
+## Hunk mapping
+
+1. Inventory the diff:
+
+   ```sh
+   git diff <range>
+   ```
+
+   The default range is the working tree against `HEAD`. Only read:
+   never commit, stage, or rewrite anything.
+2. For every hunk, judge which claim it serves and record the
+   claim ID beside it. Map each hunk to a claim ID by reading the
+   claim sentences; use only IDs from the claims JSON, never
+   invented ones.
+3. A hunk that serves no claim is an orphan. Flag every orphan
+   hunk before any human reads the report: list it under an
+   `ORPHAN` section with its file and line range.
+4. Empty diff: report `no changes` and stop.
+5. Multiple candidate claims for one hunk: list all candidates and
+   mark the hunk for human decision. Never silently pick one.
+
 ## Report template
 
 ```text
