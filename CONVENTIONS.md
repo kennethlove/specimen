@@ -50,7 +50,8 @@ bash tests/conformance.sh       # skill content greps
 ## Branching
 
 - No direct pushes to `main` — the pre-tool-use hook blocks them.
-  Work on a bookmark, open a PR, merge with squash.
+  Work on a bookmark, open a PR, and stop. **The human merges** —
+  the agent never runs `gh pr merge`.
 - Branch name: `specimen-<topic>`.
 
 ## Specs layout
