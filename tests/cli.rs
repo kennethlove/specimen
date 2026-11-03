@@ -83,3 +83,55 @@ fn check_failure_exits_nonzero() {
     assert_eq!(results[0]["status"], "fail");
     assert_eq!(results[0]["exit_code"], 1);
 }
+
+#[test]
+fn check_mixed_continues_and_skips() {
+    let (stdout, stderr, code) = run(&["check", "tests/fixtures/mixed.md"]);
+    assert_eq!(code, 1, "fail present, exit 1, stderr: {stderr}");
+    let v: serde_json::Value = serde_json::from_str(&stdout).expect("stdout is JSON");
+    let results = v.as_array().expect("JSON array");
+    assert_eq!(results.len(), 3, "all claims reported, stdout: {stdout}");
+    assert_eq!(results[0]["status"], "pass");
+    assert_eq!(results[1]["status"], "fail");
+    assert_eq!(results[1]["exit_code"], 1);
+    assert_eq!(results[2]["status"], "skipped");
+    assert!(results[2]["exit_code"].is_null(), "skipped has null code");
+    assert!(
+        stderr.contains("mixed.md:4"),
+        "missing-check warning names line, stderr: {stderr}"
+    );
+}
+
+#[test]
+fn check_bad_command_records_127() {
+    let (stdout, stderr, code) = run(&["check", "tests/fixtures/badcmd.md"]);
+    assert_eq!(code, 1, "fail present, exit 1, stderr: {stderr}");
+    let v: serde_json::Value = serde_json::from_str(&stdout).expect("stdout is JSON");
+    let results = v.as_array().expect("JSON array");
+    assert_eq!(results[0]["status"], "fail");
+    assert_eq!(results[0]["exit_code"], 127);
+}
+
+#[test]
+fn check_unparsable_input_exits_2() {
+    let (stdout, stderr, code) = run(&["check", "tests/fixtures/dup.md"]);
+    assert_eq!(code, 2, "input error, exit 2, stderr: {stderr}");
+    assert!(stdout.is_empty(), "no JSON on stdout, got: {stdout}");
+    assert!(stderr.contains("duplicate"), "stderr: {stderr}");
+}
+
+#[test]
+fn check_missing_file_exits_2() {
+    let (stdout, stderr, code) = run(&["check", "tests/fixtures/nope.md"]);
+    assert_eq!(code, 2, "input error, exit 2, stderr: {stderr}");
+    assert!(stdout.is_empty(), "no JSON on stdout, got: {stdout}");
+    assert!(stderr.contains("error"), "stderr: {stderr}");
+}
+
+#[test]
+fn check_missing_path_is_usage() {
+    let (stdout, stderr, code) = run(&["check"]);
+    assert_eq!(code, 2, "usage, exit 2, stderr: {stderr}");
+    assert!(stdout.is_empty(), "no JSON on stdout, got: {stdout}");
+    assert!(stderr.contains("usage"), "stderr: {stderr}");
+}
