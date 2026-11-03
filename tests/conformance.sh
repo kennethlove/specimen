@@ -13,3 +13,7 @@ grep -q 'reviewer' skills/conformance/SKILL.md
 grep -q 'git diff' skills/conformance/SKILL.md
 grep -q 'claim ID' skills/conformance/SKILL.md
 grep -q 'orphan' skills/conformance/SKILL.md
+
+# e02s03: full report
+grep -q 'coverage' skills/conformance/SKILL.md
+grep -qF '[human]' skills/conformance/SKILL.md
