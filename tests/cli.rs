@@ -135,3 +135,10 @@ fn check_missing_path_is_usage() {
     assert!(stdout.is_empty(), "no JSON on stdout, got: {stdout}");
     assert!(stderr.contains("usage"), "stderr: {stderr}");
 }
+
+#[test]
+fn version_flag_prints_version() {
+    let out = run(&["--version"]);
+    assert_eq!(out.2, 0, "exit code");
+    assert!(out.0.starts_with("specimen "), "stdout: {}", out.0);
+}
