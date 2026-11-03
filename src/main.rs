@@ -16,6 +16,8 @@ fn main() -> ExitCode {
     };
 
     let mut claims: Vec<serde_json::Value> = Vec::new();
+    let mut seen: std::collections::HashMap<&str, usize> =
+        std::collections::HashMap::new();
     for (i, line) in text.lines().enumerate() {
         let Some(rest) = line.strip_prefix("- [") else {
             continue;
@@ -24,6 +26,13 @@ fn main() -> ExitCode {
             continue;
         };
         let id = &rest[..end];
+        if let Some(first) = seen.insert(id, i + 1) {
+            eprintln!(
+                "error: {path}:{}: duplicate claim {id}, first defined at line {first}",
+                i + 1
+            );
+            return ExitCode::from(1);
+        }
         let body = rest[end + 1..].trim_start();
         let (sentence, check) = match body.split_once(" check: ") {
             Some((s, c)) => (s.trim_end(), c.trim()),
