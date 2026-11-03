@@ -1,6 +1,8 @@
 active_flow: plan
 vcs:
   kind: jj
+  workspace: ../checker-cli-mvp
+  change: qylqzqxv
 updated: 2026-11-03
 git:
   branch: main
@@ -15,4 +17,11 @@ handoff:
     - specs/release-plan.yaml
     - specs/epics/e01-checker-cli/epic.yaml
     - docs/brainstorm/spec-tool-requirements.md
-  next_skill: kickoff-branch
+  next_skill: develop-tdd
+metrics:
+  skill_timings:
+    develop-tdd:
+      calls: 0
+      total_seconds: 0
+      avg_seconds: 0
+      _start: '2026-11-03T18:56:46Z'
