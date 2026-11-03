@@ -25,3 +25,19 @@ fn parse_emits_claim_json() {
     assert_eq!(claims[0]["scope"], serde_json::json!([]));
     assert_eq!(claims[0]["tags"], serde_json::json!([]));
 }
+
+#[test]
+fn parse_warns_on_missing_check() {
+    let (stdout, stderr, code) = run(&["parse", "tests/fixtures/no-check.md"]);
+    assert_eq!(code, 0, "expected exit 0, stderr: {stderr}");
+    let v: serde_json::Value = serde_json::from_str(&stdout).expect("stdout is JSON");
+    let claims = v.as_array().expect("JSON array");
+    assert_eq!(claims.len(), 1, "one claim, stdout: {stdout}");
+    assert_eq!(claims[0]["check"], "", "empty check");
+    let warn = stderr.to_lowercase();
+    assert!(warn.contains("warning"), "stderr: {stderr}");
+    assert!(
+        stderr.contains("tests/fixtures/no-check.md:2"),
+        "warning names file and line, stderr: {stderr}"
+    );
+}
