@@ -1,0 +1,18 @@
+active_flow: plan
+vcs:
+  kind: jj
+updated: 2026-11-03
+git:
+  branch: main
+  hash: none # no commits yet; jj workspace, everything uncommitted
+handoff:
+  last_step_completed: "plan-work: e01/e02 specs+tasks written, gates PASS"
+  open_decisions:
+    - "Claim-line format freeze pending first real spec (e01s01 §19)"
+    - "Scope line vs [out-of-scope] tag may be one concept (glossary flag)"
+    - "Check timeout policy undecided (e01s02 §19)"
+  required_reading:
+    - specs/release-plan.yaml
+    - specs/epics/e01-checker-cli/epic.yaml
+    - docs/brainstorm/spec-tool-requirements.md
+  next_skill: kickoff-branch

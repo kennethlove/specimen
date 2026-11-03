@@ -1,0 +1,21 @@
+story_id: e02s01
+spec: e02s01-check-report.md
+title: Check report
+status: failing
+bcps: 3
+tasks:
+  - id: 1
+    description: "Skill skeleton at skills/conformance/SKILL.md"
+    verify: "test -f skills/conformance/SKILL.md"
+    risk: P3
+    status: failing
+  - id: 2
+    description: "Step: run specimen check on target spec"
+    verify: "grep -q 'specimen check' skills/conformance/SKILL.md"
+    risk: P2
+    status: failing
+  - id: 3
+    description: "Report template: claim to pass/fail listing"
+    verify: "grep -q 'pass/fail' skills/conformance/SKILL.md"
+    risk: P3
+    status: failing

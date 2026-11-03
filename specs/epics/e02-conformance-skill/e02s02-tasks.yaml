@@ -1,0 +1,21 @@
+story_id: e02s02
+spec: e02s02-hunk-mapping.md
+title: Hunk mapping
+status: failing
+bcps: 5
+tasks:
+  - id: 1
+    description: "Step: git diff hunk inventory"
+    verify: "grep -q 'git diff' skills/conformance/SKILL.md"
+    risk: P1
+    status: failing
+  - id: 2
+    description: "Step: map each hunk to a claim ID (AI judgment)"
+    verify: "grep -q 'claim ID' skills/conformance/SKILL.md"
+    risk: P0
+    status: failing
+  - id: 3
+    description: "Orphan hunks flagged pre-human"
+    verify: "grep -q 'orphan' skills/conformance/SKILL.md"
+    risk: P1
+    status: failing

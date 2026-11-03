@@ -1,0 +1,85 @@
+# Bounded PRD — spec-tool MVP (builds 1 + 2)
+# Source: docs/brainstorm/spec-tool.md
+# + docs/brainstorm/spec-tool-requirements.md
+
+core_value: >
+  Cut human code-review volume: check spec claims mechanically and map every
+  diff hunk to a claim before a human reads the diff.
+
+summary: >
+  Specimen verifies plain-markdown specs against code. A spec is claims
+  (atomic, falsifiable propositions) plus optional check commands; untagged
+  prose is context and never blocks. The MVP ships the checker CLI (parse a
+  spec to claims JSON, run its checks, exit non-zero on failure) and the
+  conformance skill (map diff hunks to claim IDs, emit a report of coverage,
+  pass/fail, orphan hunks, and [human] claims).
+  .
+  Value lands at review time: the reviewer reads the conformance report and
+  the [human] claims instead of a line-by-line diff. Hunks that map to no
+  claim are flagged before review, so unaccounted changes cannot slip past.
+  .
+  Everything else (authoring grill, metrics) waits until the MVP has
+  exercised a real spec.
+
+in_scope:
+  - id: e01
+    item: >
+      Checker CLI — parse <spec.md> to claims JSON (id, sentence, check,
+      scope, tags), warn on claims missing a check, run checks, print
+      claim → pass/fail, exit non-zero on any failure
+  - id: e02
+    item: >
+      Conformance skill — run the checker, ingest claims JSON plus git diff
+      hunks, map hunks → claim IDs, emit report with claim coverage,
+      pass/fail, orphan hunks flagged pre-human, [human] claims listed
+      separately
+
+out_of_scope:
+  - item: Grill/authoring skill (build 3)
+    why: deferred — MVP = builds 1 + 2; authoring shift-left follows once
+      real specs exist
+  - item: Metrics collection and dashboards (build 4)
+    why: deferred until baseline measurement actually starts; git log is
+      ad hoc until proven insufficient
+  - item: Test generation (red-test-first)
+    why: deferred — later opt-in to the authoring skill, not baked in day one
+  - item: Authoring UI, forms, schema server
+    why: not valuable — humans edit text directly; anti-lock-in rule
+  - item: Step-definition glue, DSL runtime
+    why: not valuable — format is markdown with line conventions, no
+      grammar to interpret
+  - item: Format server / registry
+    why: not valuable — spec files in repos are the storage
+  - item: Separate linter tool
+    why: not valuable — the missing-check warning rides inside parse
+  - item: Diff hunk inventory tooling
+    why: not ours — git diff already does it; CLI emits claims JSON, the
+      skill does the mapping
+  - item: Solving the check-command injection surface
+    why: documented, not solved — specs live in the repo, same trust
+      boundary as CI scripts
+
+constraints:
+  - Plain markdown, line conventions only; a spec stays usable with no tool
+  - Dependency budget: Rust (edition 2024), serde_json the only added dep
+    (verified current: 1.0.154); no framework, no parser/grammar deps
+  - Skills are agent-agnostic markdown in this repo (project-scoped decision)
+  - Format frozen only after the first real spec exercises it; migration is
+    one grep script
+  - Checks run sequentially, output deterministic, document order
+
+success_criteria:
+  - specimen parse emits claims JSON for a real spec; missing check warns
+    on stderr and exits 0
+  - specimen check runs every bound check; non-zero exit iff a check fails
+  - conformance report shows coverage, pass/fail, orphan hunks, and
+    [human] claims for an actual diff
+  - reviewer reads report + [human] claims instead of the line-by-line diff
+    for one real review cycle
+  - first real spec exercises the format without a breaking migration
+
+references:
+  - docs/brainstorm/spec-tool.md
+  - docs/brainstorm/spec-tool-requirements.md
+  - specs/UBIQUITOUS_LANGUAGE_LATEST.md
+  - docs/brainstorm/spec-tool-requirements.md#recommended-tools--libraries

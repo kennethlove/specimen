@@ -1,0 +1,23 @@
+story_id: e02s03
+spec: e02s03-full-report.md
+title: Full conformance report
+status: failing
+bcps: 3
+tasks:
+  - id: 1
+    description: "Coverage section: hunks mapped to claim IDs"
+    verify: "grep -q 'coverage' skills/conformance/SKILL.md"
+    risk: P2
+    status: failing
+  - id: 2
+    description: "Human claims listed separately"
+    verify: "grep -qF '[human]' skills/conformance/SKILL.md"
+    risk: P3
+    status: failing
+  - id: 3
+    description: "Report sections: coverage, pass/fail, orphans, human"
+    verify: >-
+      grep -q 'coverage' skills/conformance/SKILL.md &&
+      grep -qF '[human]' skills/conformance/SKILL.md
+    risk: P2
+    status: failing

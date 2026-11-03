@@ -1,0 +1,5 @@
+locks:
+- files_touched: []
+  locked_at: '2026-11-03T18:51:04Z'
+  locked_by: 'agent: develop-tdd'
+  story_id: e01s01

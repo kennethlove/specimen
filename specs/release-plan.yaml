@@ -1,0 +1,17 @@
+release:
+  version: "0.1.0" # mirror of next expected tag — gh release view wins
+  codename: Spec Tool MVP
+  status: planning
+  semantic_release: true
+  bump_hint: minor
+epics:
+  - id: e01
+    title: Checker CLI
+    wsjf: 1.9
+    bcps: 11
+    capsule_dir: epics/e01-checker-cli
+  - id: e02
+    title: Conformance skill
+    wsjf: 1.8
+    bcps: 11
+    capsule_dir: epics/e02-conformance-skill

@@ -1,0 +1,28 @@
+story_id: e01s01
+spec: e01s01-parse-claims.md
+title: Parse claims to JSON
+status: failing
+bcps: 4
+tasks:
+  - id: 1
+    description: "Fixture specs: happy path and missing-check"
+    verify: "test -f tests/fixtures/smoke.md"
+    risk: P2
+    status: failing
+  - id: 2
+    description: "Claim-line parser: claim + check: lines to records"
+    verify: "cargo test parse"
+    risk: P1
+    status: failing
+  - id: 3
+    description: "Emit claims JSON via serde_json (id, sentence, check)"
+    verify: "cargo run -q -- parse tests/fixtures/smoke.md"
+    risk: P1
+    status: failing
+  - id: 4
+    description: "Missing check warns on stderr, parse exits 0"
+    verify: >-
+      bash -c 'cargo run -q -- parse tests/fixtures/no-check.md 2>&1
+      | grep -qi warning'
+    risk: P2
+    status: failing

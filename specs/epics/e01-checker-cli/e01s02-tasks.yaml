@@ -1,0 +1,26 @@
+story_id: e01s02
+spec: e01s02-run-checks.md
+title: Run checks
+status: failing
+bcps: 4
+tasks:
+  - id: 1
+    description: "Run each check via sh -c, capture exit status"
+    verify: "cargo test check"
+    risk: P1
+    status: failing
+  - id: 2
+    description: "Print claim to pass/fail, document order, sequential"
+    verify: "cargo run -q -- check tests/fixtures/mixed.md"
+    risk: P1
+    status: failing
+  - id: 3
+    description: "Failing spec exits non-zero"
+    verify: "bash -c '! cargo run -q -- check tests/fixtures/failing.md'"
+    risk: P2
+    status: failing
+  - id: 4
+    description: "Passing spec exits zero"
+    verify: "cargo run -q -- check tests/fixtures/passing.md"
+    risk: P2
+    status: failing
