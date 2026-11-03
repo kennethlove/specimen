@@ -32,10 +32,7 @@ fn apply_markers(line: &str, claim: &mut Claim, path: &str, line_no: usize) -> b
             Some(p) => (after[..p].trim(), &after[p..]),
             None => (after.trim(), ""),
         };
-        if let Some(inner) = value
-            .strip_prefix('[')
-            .and_then(|v| v.strip_suffix(']'))
-        {
+        if let Some(inner) = value.strip_prefix('[').and_then(|v| v.strip_suffix(']')) {
             let elements: Vec<String> = inner
                 .split(',')
                 .map(str::trim)
@@ -58,11 +55,9 @@ fn apply_markers(line: &str, claim: &mut Claim, path: &str, line_no: usize) -> b
 
 // Returns Err with a ready-to-print message (without the "error: " prefix).
 fn parse_claims(path: &str) -> Result<Vec<Claim>, String> {
-    let text = std::fs::read_to_string(path)
-        .map_err(|e| format!("cannot read {path}: {e}"))?;
+    let text = std::fs::read_to_string(path).map_err(|e| format!("cannot read {path}: {e}"))?;
     let mut claims = Vec::new();
-    let mut seen: std::collections::HashMap<&str, usize> =
-        std::collections::HashMap::new();
+    let mut seen: std::collections::HashMap<&str, usize> = std::collections::HashMap::new();
     for (i, line) in text.lines().enumerate() {
         if let Some(rest) = line.strip_prefix("- [") {
             let Some(end) = rest.find(']') else {
@@ -91,16 +86,21 @@ fn parse_claims(path: &str) -> Result<Vec<Claim>, String> {
                 tags: Vec::new(),
             });
         } else if (line.contains("scope:") || line.contains("tags:"))
-            && let Some(claim) = claims.last_mut() {
-                apply_markers(line, claim, path, i + 1);
-            }
+            && let Some(claim) = claims.last_mut()
+        {
+            apply_markers(line, claim, path, i + 1);
+        }
     }
     Ok(claims)
 }
 
 // Runs one check string via sh -c; returns its exit code.
 fn run_one(check: &str) -> i32 {
-    match std::process::Command::new("sh").arg("-c").arg(check).status() {
+    match std::process::Command::new("sh")
+        .arg("-c")
+        .arg(check)
+        .status()
+    {
         Ok(s) => s.code().unwrap_or(-1),
         Err(_) => 127,
     }
