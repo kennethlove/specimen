@@ -151,6 +151,10 @@ fn main() -> ExitCode {
     let sub = args.get(1).map(String::as_str);
     let path = args.get(2).map(String::as_str);
     match (sub, path) {
+        (Some("--version" | "-V"), _) => {
+            println!("specimen {}", env!("CARGO_PKG_VERSION"));
+            ExitCode::SUCCESS
+        }
         (Some("parse"), Some(path)) => {
             let claims = match parse_claims(path) {
                 Ok(c) => c,
