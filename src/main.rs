@@ -98,6 +98,14 @@ fn parse_claims(path: &str) -> Result<Vec<Claim>, String> {
     Ok(claims)
 }
 
+// Runs one check string via sh -c; returns its exit code.
+fn run_one(check: &str) -> i32 {
+    match std::process::Command::new("sh").arg("-c").arg(check).status() {
+        Ok(s) => s.code().unwrap_or(-1),
+        Err(_) => 127,
+    }
+}
+
 fn run_checks(path: &str) -> ExitCode {
     let claims = match parse_claims(path) {
         Ok(c) => c,
@@ -117,12 +125,7 @@ fn run_checks(path: &str) -> ExitCode {
             }));
             continue;
         }
-        let status =
-            std::process::Command::new("sh").arg("-c").arg(&claim.check).status();
-        let code = match status {
-            Ok(s) => s.code().unwrap_or(-1),
-            Err(_) => 127,
-        };
+        let code = run_one(&claim.check);
         if code != 0 {
             failed = true;
         }
