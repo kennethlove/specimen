@@ -60,6 +60,28 @@ the answer batch to be complete.
 - Untagged lines are allowed: they are background prose for
   readers and are never treated as claims.
 
+## Authoring hygiene
+
+After writing the spec, run the hygiene pass. Everything here
+advises — nothing blocks the draft:
+
+1. For each claim's `check:` target: probe file paths with
+   `test -f <path>` and bare command names with
+   `command -v <name>`.
+2. Report each unresolvable target as a warning line naming the
+   claim id and the target. The claim stays in the file; never
+   edit or drop it to silence a warning.
+3. Tag check: claims carry a tag from the taxonomy, or their
+   prose is marked `context` in the report. Untagged prose is
+   never blocking — it is background for readers.
+4. Append the first-draft stamp to `specs/authoring-log.yaml`:
+   `- first_draft: <iso8601> spec: <path>`. Create the file with
+   a one-line header comment if it is absent.
+5. Summarize: claims probed, warnings raised, log line appended.
+
+One log line per draft, not per attempt — re-runs after fixes do
+not append again.
+
 ## Branches
 
 - **No rough idea** — ask for one sentence; stop there.
