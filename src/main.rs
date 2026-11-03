@@ -16,7 +16,7 @@ fn main() -> ExitCode {
     };
 
     let mut claims: Vec<serde_json::Value> = Vec::new();
-    for line in text.lines() {
+    for (i, line) in text.lines().enumerate() {
         let Some(rest) = line.strip_prefix("- [") else {
             continue;
         };
@@ -27,7 +27,13 @@ fn main() -> ExitCode {
         let body = rest[end + 1..].trim_start();
         let (sentence, check) = match body.split_once(" check: ") {
             Some((s, c)) => (s.trim_end(), c.trim()),
-            None => (body, ""),
+            None => {
+                eprintln!(
+                    "warning: {path}:{}: claim {id} has no check",
+                    i + 1
+                );
+                (body, "")
+            }
         };
         claims.push(serde_json::json!({
             "id": id,
