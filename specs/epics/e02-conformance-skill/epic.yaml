@@ -2,23 +2,23 @@ id: e02
 title: Conformance skill
 wsjf: 1.8
 total_bcps: 11
-status: pending
+status: done
 stories:
   - id: e02s01
     title: Check report
     bcps: 3
-    status: todo
+    status: done
     spec: e02s01-check-report.md
     tasks: e02s01-tasks.yaml
   - id: e02s02
     title: Hunk mapping
     bcps: 5
-    status: todo
+    status: done
     spec: e02s02-hunk-mapping.md
     tasks: e02s02-tasks.yaml
   - id: e02s03
     title: Full conformance report
     bcps: 3
-    status: todo
+    status: done
     spec: e02s03-full-report.md
     tasks: e02s03-tasks.yaml
