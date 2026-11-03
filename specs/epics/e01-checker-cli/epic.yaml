@@ -2,23 +2,23 @@ id: e01
 title: Checker CLI
 wsjf: 1.9
 total_bcps: 11
-status: pending
+status: done
 stories:
   - id: e01s01
     title: Parse claims to JSON
     bcps: 4
-    status: todo
+    status: done
     spec: e01s01-parse-claims.md
     tasks: e01s01-tasks.yaml
   - id: e01s02
     title: Run checks
     bcps: 4
-    status: todo
+    status: done
     spec: e01s02-run-checks.md
     tasks: e01s02-tasks.yaml
   - id: e01s03
     title: Extract tags and scope
     bcps: 3
-    status: todo
+    status: done
     spec: e01s03-tags-scope.md
     tasks: e01s03-tasks.yaml

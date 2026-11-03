@@ -1,0 +1,45 @@
+story_id: e01s03
+verified_at: '2026-11-03T19:47:00Z'
+verifier: verify-work
+phases:
+  smoke: pass
+  build:
+    command: cargo build
+    exit_code: 0
+  typecheck:
+    command: cargo check
+    exit_code: 0
+  lint:
+    command: cargo clippy --all-targets
+    exit_code: 0
+    note: No issues found
+  tests:
+    command: cargo test
+    exit_code: 0
+    note: marker tests in tests/cli_tags.rs
+  terminal_verdict:
+    command: cargo test 2>&1 | tee /tmp/verify-terminal.log
+    exit_code: 0
+    captured_at: '2026-11-03T19:40:00Z'
+    note: >-
+      single contiguous run, full suite 0+11+4+2 passed; output in
+      /tmp/verify-terminal.log
+  manual:
+    steps:
+      - step: specimen parse tests/fixtures/tags.md
+        expected: scope/tags arrays from markers, exit 0
+        actual: >-
+          C1 scope [api, cli] tags [core]; C2 tags [out of scope]
+          spaces preserved; C3/C4 empty arrays; exit 0
+        passed: true
+      - step: specimen parse tests/fixtures/badmarker.md
+        expected: warning naming line 3, empty arrays, exit 0
+        actual: 'warning: tests/fixtures/badmarker.md:3: bad marker
+          for scope:; exit 0'
+        passed: true
+      - step: specimen parse tests/fixtures/untagged.md
+        expected: empty scope/tags arrays, no warning, exit 0
+        actual: scope [] tags [], no warning, exit 0
+        passed: true
+gaps:
+  closed: true

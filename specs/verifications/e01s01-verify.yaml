@@ -1,0 +1,50 @@
+story_id: e01s01
+verified_at: '2026-11-03T19:45:00Z'
+verifier: verify-work
+phases:
+  smoke: pass
+  build:
+    command: cargo build
+    exit_code: 0
+  typecheck:
+    command: cargo check
+    exit_code: 0
+  lint:
+    command: cargo clippy --all-targets
+    exit_code: 0
+    note: No issues found
+  tests:
+    command: cargo test
+    exit_code: 0
+    note: parse tests in tests/cli_parse.rs
+  terminal_verdict:
+    command: cargo test 2>&1 | tee /tmp/verify-terminal.log
+    exit_code: 0
+    captured_at: '2026-11-03T19:40:00Z'
+    note: >-
+      single contiguous run, full suite 0+11+4+2 passed; output in
+      /tmp/verify-terminal.log
+  manual:
+    steps:
+      - step: specimen parse tests/fixtures/smoke.md
+        expected: JSON array with claim C1, exit 0
+        actual: JSON with id/sentence/check/scope/tags, exit 0
+        passed: true
+      - step: specimen parse tests/fixtures/no-check.md
+        expected: warning naming line 2, JSON with empty check, exit 0
+        actual: 'warning: tests/fixtures/no-check.md:2: claim C2 has
+          no check; JSON check ""; exit 0'
+        passed: true
+      - step: specimen parse tests/fixtures/dup.md
+        expected: error naming both lines, exit 1, no JSON
+        actual: 'error: tests/fixtures/dup.md:3: duplicate claim C1,
+          first defined at line 2; exit 1'
+        passed: true
+      - step: specimen parse tests/fixtures/nope.md
+        expected: read error, exit 1
+        actual: 'error: cannot read tests/fixtures/nope.md: No such
+          file or directory (os error 2); exit 1'
+        passed: true
+gaps:
+  closed: true
+  note: --version and README not required by any story

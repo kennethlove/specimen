@@ -1,0 +1,59 @@
+story_id: e01s02
+verified_at: '2026-11-03T19:46:00Z'
+verifier: verify-work
+phases:
+  smoke: pass
+  build:
+    command: cargo build
+    exit_code: 0
+  typecheck:
+    command: cargo check
+    exit_code: 0
+  lint:
+    command: cargo clippy --all-targets
+    exit_code: 0
+    note: No issues found
+  tests:
+    command: cargo test
+    exit_code: 0
+    note: check tests in tests/cli.rs
+  terminal_verdict:
+    command: cargo test 2>&1 | tee /tmp/verify-terminal.log
+    exit_code: 0
+    captured_at: '2026-11-03T19:40:00Z'
+    note: >-
+      single contiguous run, full suite 0+11+4+2 passed; output in
+      /tmp/verify-terminal.log
+  manual:
+    steps:
+      - step: specimen check tests/fixtures/passing.md
+        expected: JSON status pass exit_code 0, process exit 0
+        actual: '[{"exit_code": 0, "id": "C1", "status": "pass"}];
+          exit 0'
+        passed: true
+      - step: specimen check tests/fixtures/failing.md
+        expected: JSON status fail, process exit 1
+        actual: '[{"exit_code": 1, "id": "C1", "status": "fail"}];
+          exit 1'
+        passed: true
+      - step: specimen check tests/fixtures/mixed.md
+        expected: all three results, continues past fail, exit 1
+        actual: >-
+          assertion exit 0 means check exited exactly 1 with pass,
+          fail and skipped results present
+        passed: true
+      - step: specimen check tests/fixtures/nope.md
+        expected: input error, exit 2, no JSON
+        actual: 'error: cannot read tests/fixtures/nope.md: No such
+          file or directory (os error 2); exit 2'
+        passed: true
+      - step: specimen check (no path)
+        expected: usage, exit 2
+        actual: 'usage: specimen parse <path> / usage: specimen check
+          <path>; exit 2'
+        passed: true
+gaps:
+  closed: true
+  note: >-
+    e01s02 task 2 verify command corrected during sweep 1a
+    (mixed.md exits 1 by design; verify now asserts exit 1)

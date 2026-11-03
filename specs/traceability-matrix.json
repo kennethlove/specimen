@@ -1,0 +1,165 @@
+{
+  "generated_at": "2026-11-03T19:59:38.990437+00:00",
+  "matrix_version": "1.0",
+  "stories": [
+    {
+      "id": "e01s01",
+      "title": "Parse claims to JSON",
+      "epic_id": "e01",
+      "epic_title": "Checker CLI",
+      "bcp": 0,
+      "wsjf": 1.9,
+      "status": "todo",
+      "links": [
+        {
+          "file": "specs/epics/e01-checker-cli/e01s01-parse-claims.md",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/e01-checker-cli/e01s01-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        }
+      ],
+      "link_count": 2
+    },
+    {
+      "id": "e01s02",
+      "title": "Run checks",
+      "epic_id": "e01",
+      "epic_title": "Checker CLI",
+      "bcp": 0,
+      "wsjf": 1.9,
+      "status": "todo",
+      "links": [
+        {
+          "file": "specs/epics/e01-checker-cli/e01s02-run-checks.md",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/e01-checker-cli/e01s02-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        }
+      ],
+      "link_count": 2
+    },
+    {
+      "id": "e01s03",
+      "title": "Extract tags and scope",
+      "epic_id": "e01",
+      "epic_title": "Checker CLI",
+      "bcp": 0,
+      "wsjf": 1.9,
+      "status": "todo",
+      "links": [
+        {
+          "file": "specs/epics/e01-checker-cli/e01s03-tags-scope.md",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/e01-checker-cli/e01s03-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        }
+      ],
+      "link_count": 2
+    },
+    {
+      "id": "e02s01",
+      "title": "Check report",
+      "epic_id": "e02",
+      "epic_title": "Conformance skill",
+      "bcp": 0,
+      "wsjf": 1.8,
+      "status": "todo",
+      "links": [
+        {
+          "file": "specs/epics/e02-conformance-skill/e02s01-check-report.md",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/e02-conformance-skill/e02s01-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        }
+      ],
+      "link_count": 2
+    },
+    {
+      "id": "e02s02",
+      "title": "Hunk mapping",
+      "epic_id": "e02",
+      "epic_title": "Conformance skill",
+      "bcp": 0,
+      "wsjf": 1.8,
+      "status": "todo",
+      "links": [
+        {
+          "file": "specs/epics/e02-conformance-skill/e02s02-hunk-mapping.md",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/e02-conformance-skill/e02s02-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        }
+      ],
+      "link_count": 2
+    },
+    {
+      "id": "e02s03",
+      "title": "Full conformance report",
+      "epic_id": "e02",
+      "epic_title": "Conformance skill",
+      "bcp": 0,
+      "wsjf": 1.8,
+      "status": "todo",
+      "links": [
+        {
+          "file": "specs/epics/e02-conformance-skill/e02s03-full-report.md",
+          "line": 1,
+          "confidence": "high",
+          "method": "explicit_tag"
+        },
+        {
+          "file": "specs/epics/e02-conformance-skill/e02s03-tasks.yaml",
+          "line": 0,
+          "confidence": "low",
+          "method": "task_reference"
+        }
+      ],
+      "link_count": 2
+    }
+  ],
+  "summary": {
+    "total_stories": 6,
+    "tagged_stories": 6,
+    "dark_stories": [],
+    "dark_count": 0,
+    "orphan_tags": [],
+    "orphan_count": 0,
+    "stale_tags": [],
+    "stale_count": 0,
+    "oracle_stats": {
+      "high": 6,
+      "medium": 0,
+      "low": 6
+    }
+  }
+}

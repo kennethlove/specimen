@@ -1,18 +1,41 @@
-active_flow: plan
+active_flow: release
+active_story: e02s03
 vcs:
   kind: jj
+  workspace: ../checker-cli-mvp
+  change: qylqzqxv
 updated: 2026-11-03
 git:
   branch: main
-  hash: none # no commits yet; jj workspace, everything uncommitted
+  hash: none
 handoff:
-  last_step_completed: "plan-work: e01/e02 specs+tasks written, gates PASS"
+  last_step_completed: >-
+    release-branch: all gates green (tests 13, clippy clean,
+    coverage 95.69%, security REVIEW fresh, gate-trace OK,
+    conventional commits, no AI attribution); landing blocked —
+    jj solo-local unsupported, needs user decision
   open_decisions:
-    - "Claim-line format freeze pending first real spec (e01s01 §19)"
-    - "Scope line vs [out-of-scope] tag may be one concept (glossary flag)"
-    - "Check timeout policy undecided (e01s02 §19)"
+    - Claim-line format freeze pending first real spec (e01s01 §19)
+    - Scope line vs tag may be one concept (glossary flag)
+    - Check timeout policy undecided (e01s02 §19)
+    - How to land: push jj bookmark + PR, or local merge — user call
   required_reading:
-    - specs/release-plan.yaml
-    - specs/epics/e01-checker-cli/epic.yaml
-    - docs/brainstorm/spec-tool-requirements.md
-  next_skill: kickoff-branch
+    - specs/verifications/
+    - specs/security/REVIEW.md
+    - specs/traceability-matrix.json
+  next_skill: release-branch
+metrics:
+  skill_timings:
+    develop-tdd:
+      calls: 0
+      total_seconds: 0
+      avg_seconds: 0
+      _start: '2026-11-03T18:56:46Z'
+    verify-work:
+      calls: 1
+      total_seconds: 812.0
+      avg_seconds: 812.0
+    release-branch:
+      calls: 1
+      total_seconds: 228.0
+      avg_seconds: 228.0

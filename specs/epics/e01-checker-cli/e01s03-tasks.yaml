@@ -1,21 +1,21 @@
 story_id: e01s03
 spec: e01s03-tags-scope.md
 title: Extract tags and scope
-status: failing
+status: passing
 bcps: 3
 tasks:
   - id: 1
     description: "Parse [tag] prefixes into tags[]"
     verify: "cargo test tags"
     risk: P2
-    status: failing
+    status: passing
   - id: 2
     description: "Parse scope: lines into scope[]"
     verify: "cargo test scope"
     risk: P2
-    status: failing
+    status: passing
   - id: 3
     description: "Untagged claim emits tags: []"
     verify: "cargo run -q -- parse tests/fixtures/untagged.md"
     risk: P3
-    status: failing
+    status: passing

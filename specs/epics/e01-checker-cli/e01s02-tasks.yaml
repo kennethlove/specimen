@@ -11,7 +11,8 @@ tasks:
     status: failing
   - id: 2
     description: "Print claim to pass/fail, document order, sequential"
-    verify: "cargo run -q -- check tests/fixtures/mixed.md"
+    verify: >-
+      bash -c 'cargo run -q -- check tests/fixtures/mixed.md; test $? -eq 1'
     risk: P1
     status: failing
   - id: 3
