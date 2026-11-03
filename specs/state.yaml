@@ -18,6 +18,7 @@ handoff:
     - Scope line vs tag may be one concept (glossary flag)
     - Check timeout policy undecided (e01s02 §19)
   required_reading:
+    - specs/tech-architecture/MVP-TEST_PLAN_LATEST.md
     - specs/verifications/
     - specs/security/REVIEW.md
     - specs/traceability-matrix.json
