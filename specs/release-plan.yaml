@@ -15,3 +15,8 @@ epics:
     wsjf: 1.8
     bcps: 11
     capsule_dir: epics/e02-conformance-skill
+  - id: e03
+    title: Grill/authoring skill
+    wsjf: 1.7
+    bcps: 11
+    capsule_dir: epics/e03-grill-authoring

@@ -1,0 +1,28 @@
+story_id: e03s01
+spec: e03s01-grill-emit.md
+title: Grill and emit
+status: failing
+bcps: 7
+tasks:
+  - id: 1
+    description: "Skill skeleton at skills/grill/SKILL.md"
+    verify: "test -f skills/grill/SKILL.md"
+    risk: P3
+    status: failing
+  - id: 2
+    description: "Batch grill step: null fields, callers, failure modes"
+    verify: "grep -q 'callers' skills/grill/SKILL.md"
+    risk: P2
+    status: failing
+  - id: 3
+    description: "Emit implemented claim format (check/scope/tags)"
+    verify: >-
+      bash -c 'grep -q "check:" skills/grill/SKILL.md &&
+      grep -q "scope:" skills/grill/SKILL.md'
+    risk: P1
+    status: failing
+  - id: 4
+    description: "Write finished spec file into the repo"
+    verify: "grep -q 'specs/' skills/grill/SKILL.md"
+    risk: P2
+    status: failing
