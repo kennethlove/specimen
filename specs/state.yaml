@@ -10,20 +10,18 @@ git:
   hash: none
 handoff:
   last_step_completed: >-
-    release-branch: all gates green (tests 13, clippy clean,
-    coverage 95.69%, security REVIEW fresh, gate-trace OK,
-    conventional commits, no AI attribution); landing blocked —
-    jj solo-local unsupported, needs user decision
+    release-branch: PR #1 merged squash a7057f86; remote main only,
+    default branch main, feature branch deleted, epics archived,
+    locks released
   open_decisions:
     - Claim-line format freeze pending first real spec (e01s01 §19)
     - Scope line vs tag may be one concept (glossary flag)
     - Check timeout policy undecided (e01s02 §19)
-    - How to land: push jj bookmark + PR, or local merge — user call
   required_reading:
     - specs/verifications/
     - specs/security/REVIEW.md
     - specs/traceability-matrix.json
-  next_skill: release-branch
+  next_skill: session-state
 metrics:
   skill_timings:
     develop-tdd:

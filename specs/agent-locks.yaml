@@ -1,13 +1,1 @@
-locks:
-- files_touched: []
-  locked_at: '2026-11-03T18:51:04Z'
-  locked_by: 'agent: develop-tdd'
-  story_id: e01s01
-- files_touched: []
-  locked_at: '2026-11-03T19:16:51Z'
-  locked_by: 'agent: develop-tdd'
-  story_id: e01s02
-- files_touched: []
-  locked_at: '2026-11-03T19:24:25Z'
-  locked_by: 'agent: develop-tdd'
-  story_id: e01s03
+locks: []
