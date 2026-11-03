@@ -77,6 +77,43 @@ Spec: <path>
 exit code: <code> (<meaning>)
 ```
 
+## Full conformance report
+
+Assemble this report from the check listing and the hunk mapping.
+The four sections have fixed, greppable names, in this order:
+
+1. `Coverage` — mapped hunks over total claims as a percentage
+   with both counts, e.g. `coverage: 80% (8 of 10)`. Under it,
+   list every uncovered claim with its id and sentence.
+2. `Checks` — the pass/fail listing, with the exit code noted when
+   the run failed.
+3. `Orphans` — each orphan hunk with file and line range, plus a
+   footer orphan count; state `none` when there are none.
+4. `Human claims` — every claim tagged `[human]`, listed only in
+   this section and excluded from the mechanical pass/fail lines.
+   State the human claim count.
+
+Example:
+
+```text
+Coverage
+coverage: 80% (8 of 10)
+uncovered: C7 The system SHALL log failures.
+
+Checks
+exit code: 1 (at least one check failed)
+PASS C1 The system SHALL record outcomes.
+FAIL C4 The system SHALL retry once. — check: false
+
+Orphans
+none
+orphan count: 0
+
+Human claims
+[C3] The team reviews the release notes.
+human claim count: 1
+```
+
 ## Branches
 
 - A check fails (6a): keep the FAIL line with its check string and
