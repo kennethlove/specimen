@@ -10,9 +10,9 @@ git:
   hash: none
 handoff:
   last_step_completed: >-
-    verify-work e03: evidence e03s01/e03s02, AUDIT-e03 pass with
-    2 logged gaps, both TDD gates exit 0, suite 0/12/2 green,
-    grill.sh 8 greps green
+    release-branch: PR #3 merged squash cdd61e4f, local+origin
+    main synced, specimen-grill bookmarks deleted both sides,
+    bookkeeping commit rides next PR
   open_decisions:
     - Claim-line format freeze pending first real spec (e01s01 §19)
     - Scope line vs tag may be one concept (glossary flag)
@@ -25,7 +25,7 @@ handoff:
     - specs/verifications/AUDIT-e03.md
     - specs/verifications/e03s01-verify.yaml
     - specs/traceability-matrix.json
-  next_skill: release-branch
+  next_skill: session-state
 metrics:
   skill_timings:
     develop-tdd:
