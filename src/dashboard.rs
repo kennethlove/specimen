@@ -105,6 +105,96 @@ command again.</p>\n</body>\n</html>\n",
     )
 }
 
+struct Report {
+    statuses: Vec<&'static str>,
+    passed: usize,
+    failed: usize,
+    human: usize,
+}
+
+// Runs every claim check sequentially (document order) and records results.
+fn evaluate(claims: &[crate::Claim]) -> Report {
+    let mut report = Report {
+        statuses: Vec::with_capacity(claims.len()),
+        passed: 0,
+        failed: 0,
+        human: 0,
+    };
+    for c in claims {
+        report.statuses.push(if c.check.is_empty() {
+            "skipped"
+        } else if crate::run_one(&c.check) == 0 {
+            report.passed += 1;
+            "pass"
+        } else {
+            report.failed += 1;
+            "fail"
+        });
+        if c.tags.iter().any(|t| t == "human") {
+            report.human += 1;
+        }
+    }
+    report
+}
+
+// Pure HTML assembly: empty state (GUIDE) or the claims table.
+fn page_html(claims: &[crate::Claim], fields: &[String], project: &str, r: &Report) -> String {
+    let total = claims.len();
+    let body = if total == 0 {
+        format!(
+            "<h1>{project}</h1>\n<p>No claims yet.</p>\n{GUIDE}",
+            project = esc(project)
+        )
+    } else {
+        let mut header = String::new();
+        for f in fields {
+            header.push_str(&format!("<th>{}</th>", header_name(f)));
+        }
+        let mut rows = String::new();
+        for (c, status) in claims.iter().zip(&r.statuses) {
+            let is_human = c.tags.iter().any(|t| t == "human");
+            let chip = if is_human {
+                " <span class=\"human\">human</span>"
+            } else {
+                ""
+            };
+            let mut cells = String::new();
+            for f in fields {
+                let cell = match f.as_str() {
+                    "id" => format!("{}{chip}", esc(&c.id)),
+                    "sentence" => esc(&c.sentence),
+                    "check" => esc(&c.check),
+                    _ => status.to_string(),
+                };
+                cells.push_str(&format!("<td>{cell}</td>"));
+            }
+            rows.push_str(&format!(
+                "<tr{row_class}>{cells}</tr>\n",
+                row_class = if is_human { " class=\"human\"" } else { "" }
+            ));
+        }
+        let human_part = if r.human > 0 {
+            format!(" | human: {}", r.human)
+        } else {
+            String::new()
+        };
+        format!(
+            "<h1>{project}</h1>\n\
+             <p>claims: {total} | passed: {p} | failed: {f}{human_part}</p>\n\
+             <table>\n<tr>{header}</tr>\n{rows}</table>\n",
+            project = esc(project),
+            p = r.passed,
+            f = r.failed
+        )
+    };
+    format!(
+        "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n\
+         <title>{project} — conformance</title>\n</head>\n<body>\n{body}\
+         </body>\n</html>\n",
+        project = esc(project)
+    )
+}
+
 pub(crate) fn run(path: &str, out_dir: &str) -> ExitCode {
     // Config is checked before anything renders: invalid config -> exit 1,
     // no page (e04s03 §6).
@@ -136,85 +226,23 @@ pub(crate) fn run(path: &str, out_dir: &str) -> ExitCode {
         return ExitCode::from(1);
     }
 
-    let mut passed = 0usize;
-    let mut failed = 0usize;
-    let mut human = 0usize;
-    let mut header = String::new();
-    for f in &fields {
-        header.push_str(&format!("<th>{}</th>", header_name(f)));
-    }
-    let mut rows = String::new();
-    for c in &claims {
-        let status = if c.check.is_empty() {
-            "skipped"
-        } else if crate::run_one(&c.check) == 0 {
-            passed += 1;
-            "pass"
-        } else {
-            failed += 1;
-            "fail"
-        };
-        let is_human = c.tags.iter().any(|t| t == "human");
-        let chip = if is_human {
-            human += 1;
-            " <span class=\"human\">human</span>"
-        } else {
-            ""
-        };
-        let mut cells = String::new();
-        for f in &fields {
-            let cell = match f.as_str() {
-                "id" => format!("{}{chip}", esc(&c.id)),
-                "sentence" => esc(&c.sentence),
-                "check" => esc(&c.check),
-                _ => status.to_string(),
-            };
-            cells.push_str(&format!("<td>{cell}</td>"));
-        }
-        rows.push_str(&format!(
-            "<tr{row_class}>{cells}</tr>\n",
-            row_class = if is_human { " class=\"human\"" } else { "" }
-        ));
-    }
-
-    let total = claims.len();
-    let summary = if total == 0 {
-        format!(
-            "<h1>{project}</h1>\n<p>No claims yet.</p>\n{GUIDE}",
-            project = esc(&project)
-        )
-    } else {
-        let human_part = if human > 0 {
-            format!(" | human: {human}")
-        } else {
-            String::new()
-        };
-        format!(
-            "<h1>{project}</h1>\n\
-             <p>claims: {total} | passed: {passed} | failed: {failed}{human_part}</p>\n\
-             <table>\n<tr>{header}</tr>\n{rows}</table>\n",
-            project = esc(&project),
-            rows = rows
-        )
-    };
-    let page = format!(
-        "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n\
-         <title>{project} — conformance</title>\n</head>\n<body>\n{summary}\
-         </body>\n</html>\n",
-        project = esc(&project)
-    );
+    let report = evaluate(&claims);
+    let page = page_html(&claims, &fields, &project, &report);
     let index_path = format!("{out_dir}/index.html");
     if let Err(e) = std::fs::write(&index_path, &page) {
         eprintln!("error: cannot write {index_path}: {e}");
         return ExitCode::from(1);
     }
-    let human_part = if human > 0 {
-        format!(" {human} human")
+    let human_part = if report.human > 0 {
+        format!(" {} human", report.human)
     } else {
         String::new()
     };
     println!(
-        "wrote {index_path}: {total} claims {passed} passed {failed} failed{human_part}"
+        "wrote {index_path}: {total} claims {passed} passed {failed} failed{human_part}",
+        total = claims.len(),
+        passed = report.passed,
+        failed = report.failed
     );
     ExitCode::SUCCESS
 }
