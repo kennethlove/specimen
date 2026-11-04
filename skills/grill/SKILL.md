@@ -41,8 +41,9 @@ weeks later, and write a spec file of claim lines that
      `scope: [api]` and `tags: [test]` when they apply.
    - Sentences without the `- [` prefix are prose, not claims.
 5. Write the finished spec file under `specs/`. If the target
-   path already exists, ask overwrite-or-rename — never replace
-   a file silently.
+   path already exists, prompt `overwrite <path>? [y/N]` — N is
+   the default and offers a rename instead; never replace a file
+   silently.
 6. Run `cargo run -q -- parse <file>` (or `specimen parse <file>`)
    on the written file and report the result verbatim: claims
    emitted, messages raised, exit code.
@@ -75,8 +76,10 @@ advises — nothing blocks the draft:
    prose is marked `context` in the report. Untagged prose is
    never blocking — it is background for readers.
 4. Append the first-draft stamp to `specs/authoring-log.yaml`:
-   `- first_draft: <iso8601> spec: <path>`. Create the file with
-   a one-line header comment if it is absent.
+   `- first_draft: <iso8601> spec: <path> warnings: <count>`.
+   Create the file with a one-line header comment if it is
+   absent. The count is the warnings raised in step 2 of this
+   pass.
 5. Summarize: claims probed, warnings raised, log line appended.
 
 One log line per draft, not per attempt — re-runs after fixes do
@@ -87,6 +90,7 @@ not append again.
 - **No rough idea** — ask for one sentence; stop there.
 - **Open answers** — record them under open questions with an
   owner; the draft still ships.
-- **Existing file path** — ask overwrite-or-rename first.
+- **Existing file path** — prompt `overwrite <path>? [y/N]`
+  first; N offers a rename.
 - **Parse reports problems** — quote them verbatim and stop; the
   author fixes, you never edit the file to make messages go away.
