@@ -14,7 +14,6 @@ handoff:
     main synced, specimen-grill bookmarks deleted both sides,
     bookkeeping commit rides next PR
   open_decisions:
-    - Claim-line format freeze pending first real spec (e01s01 §19)
     - Scope line vs tag may be one concept (glossary flag)
     - Check timeout policy undecided (e01s02 §19)
     - Grill prompt wording and log-count fields (e03 §19)
