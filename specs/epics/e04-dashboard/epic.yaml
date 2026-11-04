@@ -2,23 +2,23 @@ id: e04
 title: Conformance dashboard
 wsjf: 1.6
 total_bcps: 14
-status: pending
+status: done
 stories:
   - id: e04s01
     title: Render static dashboard
     bcps: 7
-    status: todo
+    status: done
     spec: e04s01-render-dashboard.md
     tasks: e04s01-tasks.yaml
   - id: e04s02
     title: States and highlights
     bcps: 4
-    status: todo
+    status: done
     spec: e04s02-states-highlights.md
     tasks: e04s02-tasks.yaml
   - id: e04s03
     title: Field config
     bcps: 3
-    status: todo
+    status: done
     spec: e04s03-field-config.md
     tasks: e04s03-tasks.yaml
