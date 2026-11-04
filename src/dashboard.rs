@@ -22,6 +22,77 @@ spec as <code>- [ID] sentence check: command</code>. After editing, run \
 <code>specimen dashboard &lt;spec.md&gt; &lt;out-dir&gt;</code> again.</p>\
 </section>\n";
 
+// WHY: `toml` crate (added on e04s03) over hand-rolled key=value parsing —
+// stdlib has no TOML reader and the config format is TOML by author decision
+// (`~/.config/specimen.toml`). Field names are matched against this
+// allowlist, never evaluated as code.
+const VALID_FIELDS: [&str; 4] = ["id", "sentence", "check", "status"];
+const DEFAULT_FIELDS: [&str; 4] = ["id", "sentence", "check", "status"];
+
+fn default_fields() -> Vec<String> {
+    DEFAULT_FIELDS.iter().map(|s| s.to_string()).collect()
+}
+
+// Loads the ordered display field list from ~/.config/specimen.toml.
+// Missing file or missing HOME -> defaults (silent). Present file -> strict:
+// any problem is an Err the caller turns into exit 1 with no render.
+fn load_fields() -> Result<Vec<String>, String> {
+    let Some(home) = std::env::var_os("HOME") else {
+        return Ok(default_fields());
+    };
+    let path = std::path::PathBuf::from(home).join(".config/specimen.toml");
+    let text = match std::fs::read_to_string(&path) {
+        Ok(t) => t,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(default_fields()),
+        Err(e) => return Err(format!("cannot read {}: {e}", path.display())),
+    };
+    // toml 1.x: Value::from_str parses a bare value, Table parses a document.
+    let cfg: toml::Table = text
+        .parse()
+        .map_err(|e| format!("invalid config {}: {e}", path.display()))?;
+    let Some(list) = cfg.get("fields").and_then(toml::Value::as_array) else {
+        return Err(format!("{}: missing `fields` list", path.display()));
+    };
+    let mut fields = Vec::new();
+    for value in list {
+        let Some(name) = value.as_str() else {
+            return Err(format!(
+                "{}: field entries must be strings",
+                path.display()
+            ));
+        };
+        if !VALID_FIELDS.contains(&name) {
+            return Err(format!(
+                "{}: unknown field {name}; valid fields: {}",
+                path.display(),
+                VALID_FIELDS.join(", ")
+            ));
+        }
+        if !fields.iter().any(|f| f == name) {
+            fields.push(name.to_string());
+        }
+    }
+    if fields.is_empty() {
+        return Err(format!("{}: `fields` is empty", path.display()));
+    }
+    // Structural: every row must show which claim and whether it passed.
+    if !fields.iter().any(|f| f == "id") {
+        fields.insert(0, "id".to_string());
+    }
+    if !fields.iter().any(|f| f == "status") {
+        fields.push("status".to_string());
+    }
+    Ok(fields)
+}
+
+fn header_name(field: &str) -> &str {
+    if field == "sentence" {
+        "claim"
+    } else {
+        field
+    }
+}
+
 fn failure_page(project: &str, error: &str) -> String {
     format!(
         "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n\
@@ -35,6 +106,15 @@ command again.</p>\n</body>\n</html>\n",
 }
 
 pub(crate) fn run(path: &str, out_dir: &str) -> ExitCode {
+    // Config is checked before anything renders: invalid config -> exit 1,
+    // no page (e04s03 §6).
+    let fields = match load_fields() {
+        Ok(f) => f,
+        Err(e) => {
+            eprintln!("error: {e}");
+            return ExitCode::from(1);
+        }
+    };
     let project = project_name(path);
     let claims = match crate::parse_claims(path) {
         Ok(c) => c,
@@ -59,6 +139,10 @@ pub(crate) fn run(path: &str, out_dir: &str) -> ExitCode {
     let mut passed = 0usize;
     let mut failed = 0usize;
     let mut human = 0usize;
+    let mut header = String::new();
+    for f in &fields {
+        header.push_str(&format!("<th>{}</th>", header_name(f)));
+    }
     let mut rows = String::new();
     for c in &claims {
         let status = if c.check.is_empty() {
@@ -77,15 +161,19 @@ pub(crate) fn run(path: &str, out_dir: &str) -> ExitCode {
         } else {
             ""
         };
+        let mut cells = String::new();
+        for f in &fields {
+            let cell = match f.as_str() {
+                "id" => format!("{}{chip}", esc(&c.id)),
+                "sentence" => esc(&c.sentence),
+                "check" => esc(&c.check),
+                _ => status.to_string(),
+            };
+            cells.push_str(&format!("<td>{cell}</td>"));
+        }
         rows.push_str(&format!(
-            "<tr{row_class}><td>{id}{chip}</td><td>{sentence}</td>\
-             <td>{check}</td><td>{status}</td></tr>\n",
-            row_class = if is_human { " class=\"human\"" } else { "" },
-            id = esc(&c.id),
-            chip = chip,
-            sentence = esc(&c.sentence),
-            check = esc(&c.check),
-            status = status
+            "<tr{row_class}>{cells}</tr>\n",
+            row_class = if is_human { " class=\"human\"" } else { "" }
         ));
     }
 
@@ -104,8 +192,7 @@ pub(crate) fn run(path: &str, out_dir: &str) -> ExitCode {
         format!(
             "<h1>{project}</h1>\n\
              <p>claims: {total} | passed: {passed} | failed: {failed}{human_part}</p>\n\
-             <table>\n<tr><th>id</th><th>claim</th><th>check</th><th>status</th></tr>\n\
-             {rows}</table>\n",
+             <table>\n<tr>{header}</tr>\n{rows}</table>\n",
             project = esc(&project),
             rows = rows
         )
