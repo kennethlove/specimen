@@ -20,3 +20,8 @@ epics:
     wsjf: 1.7
     bcps: 11
     capsule_dir: epics/e03-grill-authoring
+  - id: e04
+    title: Conformance dashboard
+    wsjf: 1.6
+    bcps: 14
+    capsule_dir: epics/e04-dashboard

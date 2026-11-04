@@ -1,0 +1,30 @@
+story_id: e04s01
+spec: e04s01-render-dashboard.md
+title: Render static dashboard
+status: failing
+bcps: 7
+tasks:
+  - id: 1
+    description: "Dashboard subcommand registered in usage"
+    verify: "cargo run -q -- dashboard 2>&1 | grep -q dashboard"
+    risk: P2
+    status: failing
+  - id: 2
+    description: "Render index.html: project, claims, statuses, counts"
+    verify: >-
+      bash -c 'cargo run -q -- dashboard tests/fixtures/dash-spec.md
+      /tmp/dash-e2e && grep -q "project" /tmp/dash-e2e/index.html'
+    risk: P1
+    status: failing
+  - id: 3
+    description: "Summary counts line present"
+    verify: >-
+      grep -q 'claims:' /tmp/dash-e2e/index.html
+    risk: P2
+    status: failing
+  - id: 4
+    description: "Each claim readable in full"
+    verify: >-
+      grep -q 'MUST' /tmp/dash-e2e/index.html
+    risk: P2
+    status: failing
