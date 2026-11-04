@@ -36,6 +36,55 @@ fn dashboard_renders_index() {
 }
 
 #[test]
+fn dashboard_empty_state_guides_reader() {
+    let dir = std::env::temp_dir().join("specimen-dash-empty");
+    let _ = std::fs::remove_dir_all(&dir);
+    let (o, e, c) = run(&[
+        "dashboard",
+        "tests/fixtures/dash-empty.md",
+        dir.to_str().expect("tmpdir"),
+    ]);
+    assert_eq!(c, 0, "stdout: {o} stderr: {e}");
+    let page = std::fs::read_to_string(dir.join("index.html")).expect("index.html");
+    assert!(page.contains("dash-empty"), "project name: {page}");
+    assert!(
+        page.to_lowercase().contains("no claims yet"),
+        "empty message: {page}"
+    );
+    assert!(page.contains("Getting started"), "guide: {page}");
+}
+
+#[test]
+fn dashboard_failure_writes_page_with_fix_hint() {
+    let dir = std::env::temp_dir().join("specimen-dash-err");
+    let _ = std::fs::remove_dir_all(&dir);
+    let (o, e, c) = run(&[
+        "dashboard",
+        "tests/fixtures/does-not-exist.md",
+        dir.to_str().expect("tmpdir"),
+    ]);
+    assert_eq!(c, 1, "stdout: {o} stderr: {e}");
+    let page = std::fs::read_to_string(dir.join("index.html")).expect("index.html");
+    assert!(page.contains("does-not-exist"), "project name: {page}");
+    assert!(page.contains("cannot read"), "error text: {page}");
+    assert!(page.contains("fix"), "fix hint: {page}");
+}
+
+#[test]
+fn dashboard_human_claim_labeled() {
+    let dir = std::env::temp_dir().join("specimen-dash-human");
+    let _ = std::fs::remove_dir_all(&dir);
+    run(&[
+        "dashboard",
+        "tests/fixtures/dash-spec.md",
+        dir.to_str().expect("tmpdir"),
+    ]);
+    let page = std::fs::read_to_string(dir.join("index.html")).expect("index.html");
+    assert!(page.contains("human"), "human label: {page}");
+    assert!(page.contains("human: 1"), "human count: {page}");
+}
+
+#[test]
 fn dashboard_counts_pass_and_fail() {
     let dir = std::env::temp_dir().join("specimen-dash-counts");
     let _ = std::fs::remove_dir_all(&dir);
