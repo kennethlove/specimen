@@ -1,0 +1,39 @@
+story_id: e04s01
+verified_at: '2026-11-04T01:34:49Z'
+verifier: verify-work
+phases:
+  smoke:
+    - step: 'dashboard subcommand registered'
+      expected: 'usage: specimen dashboard on stdout/stderr'
+      actual: 'grep -q dashboard on cargo run -- dashboard (no args) matched'
+      passed: true
+  build:
+    command: cargo build
+    exit_code: 0
+  typecheck:
+    command: cargo clippy --all-targets
+    exit_code: 0
+    note: 'clippy covers type errors; no separate typecheck configured'
+  lint:
+    command: cargo clippy --all-targets
+    exit_code: 0
+    output: 'No issues found'
+  tests:
+    command: cargo test
+    exit_code: 0
+    passed: 23
+  terminal_verdict:
+    command: cargo test
+    exit_code: 0
+    captured_at: '2026-11-04T01:34:49Z'
+    note: 'single run: 23 passed, /tmp/verify-e04-terminal.log'
+  manual:
+    - step: 'render fixture to index.html'
+      expected: 'wrote line, 3 claim rows, summary counts, exit 0'
+      actual: >-
+        wrote /tmp/uat-s01/index.html: 3 claims 2 passed 1 failed 1 human;
+        rows=3; claims: 3 | passed: 2 | failed: 1 | human: 1; exit=0
+      passed: true
+gaps:
+  closed: true
+  notes: []

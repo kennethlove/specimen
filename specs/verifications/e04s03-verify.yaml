@@ -1,0 +1,48 @@
+story_id: e04s03
+verified_at: '2026-11-04T01:34:49Z'
+verifier: verify-work
+phases:
+  smoke:
+    - step: 'config path constant in source'
+      expected: 'specimen.toml appears in src/dashboard.rs'
+      actual: 'grep -q specimen.toml src/dashboard.rs matched'
+      passed: true
+  build:
+    command: cargo build
+    exit_code: 0
+  typecheck:
+    command: cargo clippy --all-targets
+    exit_code: 0
+    note: 'clippy covers type errors; no separate typecheck configured'
+  lint:
+    command: cargo clippy --all-targets
+    exit_code: 0
+    output: 'No issues found'
+  tests:
+    command: cargo test
+    exit_code: 0
+    passed: 23
+  terminal_verdict:
+    command: cargo test
+    exit_code: 0
+    captured_at: '2026-11-04T01:34:49Z'
+    note: 'single run: 23 passed, /tmp/verify-e04-terminal.log'
+  manual:
+    - step: 'no config file -> default fields'
+      expected: 'exit 0, check column present'
+      actual: 'default-exit=0; <th>check</th> present'
+      passed: true
+    - step: 'fields = [sentence, status] -> column subset'
+      expected: 'exit 0, check column absent, id+status always'
+      actual: >-
+        fields-exit=0; check-absent; <th>status</th>; <th>id</th>
+      passed: true
+    - step: 'invalid TOML -> loud failure, no render'
+      expected: 'exit 1, stderr names config path, no index.html'
+      actual: >-
+        broken-exit=1; error names /tmp/uat-home-broken/.config/specimen.toml;
+        no-page
+      passed: true
+gaps:
+  closed: true
+  notes: []

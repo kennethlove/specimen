@@ -1,0 +1,22 @@
+story_id: e04s03
+spec: e04s03-field-config.md
+title: Field config
+status: passing
+bcps: 3
+tasks:
+  - id: 1
+    description: "Read ~/.config/specimen.toml when present"
+    verify: >-
+      grep -q 'specimen.toml' src/dashboard.rs
+    risk: P2
+    status: passing
+  - id: 2
+    description: "Missing config falls back to defaults"
+    verify: "cargo test config_default"
+    risk: P2
+    status: passing
+  - id: 3
+    description: "Config selects displayed fields"
+    verify: "cargo test config_fields"
+    risk: P2
+    status: passing

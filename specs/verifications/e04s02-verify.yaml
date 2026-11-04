@@ -1,0 +1,48 @@
+story_id: e04s02
+verified_at: '2026-11-04T01:34:49Z'
+verifier: verify-work
+phases:
+  smoke:
+    - step: 'three render states exercised'
+      expected: 'empty, failure, human states produce pages per story'
+      actual: 'see manual steps; all exit codes and page contents matched'
+      passed: true
+  build:
+    command: cargo build
+    exit_code: 0
+  typecheck:
+    command: cargo clippy --all-targets
+    exit_code: 0
+    note: 'clippy covers type errors; no separate typecheck configured'
+  lint:
+    command: cargo clippy --all-targets
+    exit_code: 0
+    output: 'No issues found'
+  tests:
+    command: cargo test
+    exit_code: 0
+    passed: 23
+  terminal_verdict:
+    command: cargo test
+    exit_code: 0
+    captured_at: '2026-11-04T01:34:49Z'
+    note: 'single run: 23 passed, /tmp/verify-e04-terminal.log'
+  manual:
+    - step: 'empty state page (zero claims)'
+      expected: 'exit 0, project name, no-claims message, Getting started'
+      actual: >-
+        empty-exit=0; No claims yet.; Getting started
+      passed: true
+    - step: 'failure state page (unreadable spec)'
+      expected: 'exit 1, page with error text and fix hint'
+      actual: >-
+        bad-exit=1; page contains cannot read and Fix: verify
+      passed: true
+    - step: 'human claim highlight'
+      expected: 'row class + visible human label + summary human count'
+      actual: >-
+        class="human"; <span class="human">human</span>; | human: 1
+      passed: true
+gaps:
+  closed: true
+  notes: []
