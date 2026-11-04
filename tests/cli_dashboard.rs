@@ -114,6 +114,23 @@ fn dashboard_counts_pass_and_fail() {
 }
 
 #[test]
+fn dashboard_stdout_uses_summary_format() {
+    let dir = std::env::temp_dir().join("specimen-dash-summary");
+    let _ = std::fs::remove_dir_all(&dir);
+    let (o, _e, c) = run(&[
+        "dashboard",
+        "tests/fixtures/dash-spec.md",
+        dir.to_str().expect("tmpdir"),
+    ]);
+    assert_eq!(c, 0, "stdout: {o}");
+    assert!(
+        o.contains("claims: 3 | passed: 2 | failed: 1"),
+        "stdout: {o}"
+    );
+    assert!(o.contains("wrote "), "stdout: {o}");
+}
+
+#[test]
 fn dashboard_usage_shows_open_flag() {
     let (_o, e, c) = run(&["dashboard", "tests/fixtures/dash-spec.md"]);
     assert_eq!(c, 2, "stderr: {e}");
