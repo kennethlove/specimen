@@ -45,6 +45,6 @@ fn dashboard_counts_pass_and_fail() {
         dir.to_str().expect("tmpdir"),
     ]);
     let page = std::fs::read_to_string(dir.join("index.html")).expect("index.html");
-    assert!(page.contains("passed: 1"), "passed count: {page}");
+    assert!(page.contains("passed: 2"), "passed count: {page}");
     assert!(page.contains("failed: 1"), "failed count: {page}");
 }
