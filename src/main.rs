@@ -10,10 +10,12 @@ struct Claim {
     tags: Vec<String>,
 }
 
-// Consumes `scope:` / `tags:` markers on a line. Returns false when the
-// line holds a marker with no bracketed list (caller warns).
-fn apply_markers(line: &str, claim: &mut Claim, path: &str, line_no: usize) -> bool {
+// Consumes `scope:` / `tags:` markers on a line. Returns the line with the
+// marker spans removed (claim lines carry markers after `check:`) and false
+// when a marker had no bracketed list (caller warns).
+fn apply_markers(line: &str, claim: &mut Claim, path: &str, line_no: usize) -> (String, bool) {
     let mut work = line.trim_start();
+    let mut cleaned = String::new();
     let mut ok = true;
     loop {
         let scope_at = work.find("scope:");
@@ -25,6 +27,7 @@ fn apply_markers(line: &str, claim: &mut Claim, path: &str, line_no: usize) -> b
             (None, Some(t)) => (t, "tags:"),
             (None, None) => break,
         };
+        cleaned.push_str(&work[..at]);
         let after = work[at + key.len()..].trim_start();
         let next = [after.find("scope:"), after.find("tags:")]
             .into_iter()
@@ -52,7 +55,8 @@ fn apply_markers(line: &str, claim: &mut Claim, path: &str, line_no: usize) -> b
         }
         work = rest;
     }
-    ok
+    cleaned.push_str(work);
+    (cleaned, ok)
 }
 
 // Returns Err with a ready-to-print message (without the "error: " prefix).
@@ -72,21 +76,24 @@ fn parse_claims(path: &str) -> Result<Vec<Claim>, String> {
                     i + 1
                 ));
             }
-            let body = rest[end + 1..].trim_start();
+            let mut claim = Claim {
+                id: id.to_string(),
+                sentence: String::new(),
+                check: String::new(),
+                scope: Vec::new(),
+                tags: Vec::new(),
+            };
+            let (body, _) = apply_markers(rest[end + 1..].trim_start(), &mut claim, path, i + 1);
             let (sentence, check) = match body.split_once(" check: ") {
                 Some((s, c)) => (s.trim_end().to_string(), c.trim().to_string()),
                 None => {
                     eprintln!("warning: {path}:{}: claim {id} has no check", i + 1);
-                    (body.to_string(), String::new())
+                    (body.trim_end().to_string(), String::new())
                 }
             };
-            claims.push(Claim {
-                id: id.to_string(),
-                sentence,
-                check,
-                scope: Vec::new(),
-                tags: Vec::new(),
-            });
+            claim.sentence = sentence;
+            claim.check = check;
+            claims.push(claim);
         } else if (line.contains("scope:") || line.contains("tags:"))
             && let Some(claim) = claims.last_mut()
         {
