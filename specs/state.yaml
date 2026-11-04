@@ -10,8 +10,9 @@ git:
   hash: none
 handoff:
   last_step_completed: >-
-    audit-code e04: AUDIT-e04.md written (2 deferrals noted),
-    evidence e04s01-s03 recorded, epic+execution-status done
+    release-branch: PR #4 merged squash 829d174, specimen-dash
+    deleted both sides, e03+e04 epics archived; queued for next
+    PR: maud templates + dashboard --open flag
   open_decisions:
     - Scope line vs tag may be one concept (glossary flag)
     - Check timeout policy undecided (e01s02 §19)
@@ -25,7 +26,7 @@ handoff:
     - specs/verifications/AUDIT-e04.md
     - specs/verifications/e04s01-verify.yaml
     - specs/traceability-matrix.json
-  next_skill: release-branch
+  next_skill: develop-tdd
 metrics:
   skill_timings:
     develop-tdd:

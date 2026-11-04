@@ -112,3 +112,25 @@ fn dashboard_counts_pass_and_fail() {
     assert!(page.contains("passed: 2"), "passed count: {page}");
     assert!(page.contains("failed: 1"), "failed count: {page}");
 }
+
+#[test]
+fn dashboard_usage_shows_open_flag() {
+    let (_o, e, c) = run(&["dashboard", "tests/fixtures/dash-spec.md"]);
+    assert_eq!(c, 2, "stderr: {e}");
+    assert!(e.contains("[--open]"), "stderr: {e}");
+}
+
+#[test]
+fn dashboard_open_flag_parses_without_browser() {
+    // Bad spec + --open: the flag must parse (not usage) and the run must
+    // fail before any browser open, so the suite never launches one.
+    let dir = std::env::temp_dir().join("specimen-dash-open-bad");
+    let _ = std::fs::remove_dir_all(&dir);
+    let (_o, e, c) = run(&[
+        "dashboard",
+        "tests/fixtures/does-not-exist.md",
+        dir.to_str().expect("tmpdir"),
+        "--open",
+    ]);
+    assert_eq!(c, 1, "stderr: {e}");
+}

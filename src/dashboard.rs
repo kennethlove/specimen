@@ -1,12 +1,9 @@
 use std::process::ExitCode;
 
-// Claim text may contain HTML metacharacters; never let it mark up the page.
-fn esc(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
-}
+// WHY: maud over hand-built `format!` strings — compile-time HTML macros
+// with automatic escaping, which replaces the old `esc()` helper. User
+// chose maud for the dashboard templates (m01220).
+use maud::{html, DOCTYPE};
 
 fn project_name(path: &str) -> String {
     std::path::Path::new(path)
@@ -15,12 +12,6 @@ fn project_name(path: &str) -> String {
         .unwrap_or(path)
         .to_string()
 }
-
-// Guide constant for the empty state (e04s02): lives in template code, not a file.
-const GUIDE: &str = "<section><h2>Getting started</h2><p>Claims live in the \
-spec as <code>- [ID] sentence check: command</code>. After editing, run \
-<code>specimen dashboard &lt;spec.md&gt; &lt;out-dir&gt;</code> again.</p>\
-</section>\n";
 
 // WHY: `toml` crate (added on e04s03) over hand-rolled key=value parsing —
 // stdlib has no TOML reader and the config format is TOML by author decision
@@ -86,23 +77,25 @@ fn load_fields() -> Result<Vec<String>, String> {
 }
 
 fn header_name(field: &str) -> &str {
-    if field == "sentence" {
-        "claim"
-    } else {
-        field
-    }
+    if field == "sentence" { "claim" } else { field }
 }
 
 fn failure_page(project: &str, error: &str) -> String {
-    format!(
-        "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n\
-         <title>{project} — conformance</title>\n</head>\n<body>\n\
-         <h1>{project}</h1>\n<p class=\"error\">{error}</p>\n\
-         <p>Fix: verify the spec path and claim syntax, then run the \
-command again.</p>\n</body>\n</html>\n",
-        project = esc(project),
-        error = esc(error)
-    )
+    html! {
+        (DOCTYPE)
+        html lang="en" {
+            head {
+                meta charset="utf-8";
+                title { (project) " — conformance" }
+            }
+            body {
+                h1 { (project) }
+                p class="error" { (error) }
+                p { "Fix: verify the spec path and claim syntax, then run the command again." }
+            }
+        }
+    }
+    .into_string()
 }
 
 struct Report {
@@ -137,65 +130,105 @@ fn evaluate(claims: &[crate::Claim]) -> Report {
     report
 }
 
-// Pure HTML assembly: empty state (GUIDE) or the claims table.
+// Pure HTML assembly: empty state (Getting started guide) or claims table.
 fn page_html(claims: &[crate::Claim], fields: &[String], project: &str, r: &Report) -> String {
-    let total = claims.len();
-    let body = if total == 0 {
-        format!(
-            "<h1>{project}</h1>\n<p>No claims yet.</p>\n{GUIDE}",
-            project = esc(project)
-        )
+    let human_part = if r.human > 0 {
+        format!(" | human: {}", r.human)
     } else {
-        let mut header = String::new();
-        for f in fields {
-            header.push_str(&format!("<th>{}</th>", header_name(f)));
-        }
-        let mut rows = String::new();
-        for (c, status) in claims.iter().zip(&r.statuses) {
-            let is_human = c.tags.iter().any(|t| t == "human");
-            let chip = if is_human {
-                " <span class=\"human\">human</span>"
-            } else {
-                ""
-            };
-            let mut cells = String::new();
-            for f in fields {
-                let cell = match f.as_str() {
-                    "id" => format!("{}{chip}", esc(&c.id)),
-                    "sentence" => esc(&c.sentence),
-                    "check" => esc(&c.check),
-                    _ => status.to_string(),
-                };
-                cells.push_str(&format!("<td>{cell}</td>"));
-            }
-            rows.push_str(&format!(
-                "<tr{row_class}>{cells}</tr>\n",
-                row_class = if is_human { " class=\"human\"" } else { "" }
-            ));
-        }
-        let human_part = if r.human > 0 {
-            format!(" | human: {}", r.human)
-        } else {
-            String::new()
-        };
-        format!(
-            "<h1>{project}</h1>\n\
-             <p>claims: {total} | passed: {p} | failed: {f}{human_part}</p>\n\
-             <table>\n<tr>{header}</tr>\n{rows}</table>\n",
-            project = esc(project),
-            p = r.passed,
-            f = r.failed
-        )
+        String::new()
     };
-    format!(
-        "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n\
-         <title>{project} — conformance</title>\n</head>\n<body>\n{body}\
-         </body>\n</html>\n",
-        project = esc(project)
-    )
+    html! {
+        (DOCTYPE)
+        html lang="en" {
+            head {
+                meta charset="utf-8";
+                title { (project) " — conformance" }
+            }
+            body {
+                h1 { (project) }
+                @if claims.is_empty() {
+                    p { "No claims yet." }
+                    section {
+                        h2 { "Getting started" }
+                        p {
+                            "Claims live in the spec as "
+                            code { "- [ID] sentence check: command" }
+                            ". After editing, run "
+                            code { "specimen dashboard <spec.md> <out-dir>" }
+                            " again."
+                        }
+                    }
+                } @else {
+                    p {
+                        "claims: " (claims.len())
+                        " | passed: " (r.passed)
+                        " | failed: " (r.failed)
+                        (human_part)
+                    }
+                    table {
+                        tr { @for f in fields { th { (header_name(f)) } } }
+                        @for (c, status) in claims.iter().zip(&r.statuses) {
+                            tr class=(if c.tags.iter().any(|t| t == "human") {
+                                "human"
+                            } else {
+                                ""
+                            }) {
+                                @for f in fields {
+                                    td {
+                                        @match f.as_str() {
+                                            "id" => {
+                                                (c.id)
+                                                @if c.tags.iter().any(|t| t == "human") {
+                                                    span class="human" { "human" }
+                                                }
+                                            }
+                                            "sentence" => { (c.sentence) }
+                                            "check" => { (c.check) }
+                                            _ => { (status) }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .into_string()
 }
 
-pub(crate) fn run(path: &str, out_dir: &str) -> ExitCode {
+// WHY: stdlib has no "open in browser" API; the per-OS launcher is the
+// native platform feature (ladder rung 5). A failure warns only — the
+// page is already written.
+fn open_in_browser(path: &str) -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    let program = "open";
+    #[cfg(target_os = "linux")]
+    let program = "xdg-open";
+    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+    return Err("opening a browser is unsupported on this platform".to_string());
+    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    std::process::Command::new(program)
+        .arg(path)
+        .spawn()
+        .map(drop)
+        .map_err(|e| e.to_string())
+}
+
+pub(crate) fn run(path: &str, rest: &[String]) -> ExitCode {
+    // Flag anywhere after the positionals; exactly one out-dir required.
+    let open = rest.iter().any(|a| a == "--open");
+    let dirs: Vec<&str> = rest
+        .iter()
+        .filter(|a| a.as_str() != "--open")
+        .map(String::as_str)
+        .collect();
+    if dirs.len() != 1 {
+        eprintln!("usage: specimen dashboard <spec.md> <out-dir> [--open]");
+        return ExitCode::from(2);
+    }
+    let out_dir = dirs[0];
     // Config is checked before anything renders: invalid config -> exit 1,
     // no page (e04s03 §6).
     let fields = match load_fields() {
@@ -244,5 +277,10 @@ pub(crate) fn run(path: &str, out_dir: &str) -> ExitCode {
         passed = report.passed,
         failed = report.failed
     );
+    if open
+        && let Err(e) = open_in_browser(&index_path)
+    {
+        eprintln!("warning: cannot open {index_path}: {e}");
+    }
     ExitCode::SUCCESS
 }
