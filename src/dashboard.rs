@@ -130,13 +130,19 @@ fn evaluate(claims: &[crate::Claim]) -> Report {
     report
 }
 
-// Pure HTML assembly: empty state (Getting started guide) or claims table.
-fn page_html(claims: &[crate::Claim], fields: &[String], project: &str, r: &Report) -> String {
-    let human_part = if r.human > 0 {
-        format!(" | human: {}", r.human)
+// One wording for page and stdout — decided 2026-11-04 (state.yaml).
+fn summary_line(total: usize, passed: usize, failed: usize, human: usize) -> String {
+    let human_part = if human > 0 {
+        format!(" | human: {human}")
     } else {
         String::new()
     };
+    format!("claims: {total} | passed: {passed} | failed: {failed}{human_part}")
+}
+
+// Pure HTML assembly: empty state (Getting started guide) or claims table.
+fn page_html(claims: &[crate::Claim], fields: &[String], project: &str, r: &Report) -> String {
+    let summary = summary_line(claims.len(), r.passed, r.failed, r.human);
     html! {
         (DOCTYPE)
         html lang="en" {
@@ -159,12 +165,7 @@ fn page_html(claims: &[crate::Claim], fields: &[String], project: &str, r: &Repo
                         }
                     }
                 } @else {
-                    p {
-                        "claims: " (claims.len())
-                        " | passed: " (r.passed)
-                        " | failed: " (r.failed)
-                        (human_part)
-                    }
+                    p { (summary) }
                     table {
                         tr { @for f in fields { th { (header_name(f)) } } }
                         @for (c, status) in claims.iter().zip(&r.statuses) {
@@ -266,17 +267,8 @@ pub(crate) fn run(path: &str, rest: &[String]) -> ExitCode {
         eprintln!("error: cannot write {index_path}: {e}");
         return ExitCode::from(1);
     }
-    let human_part = if report.human > 0 {
-        format!(" {} human", report.human)
-    } else {
-        String::new()
-    };
-    println!(
-        "wrote {index_path}: {total} claims {passed} passed {failed} failed{human_part}",
-        total = claims.len(),
-        passed = report.passed,
-        failed = report.failed
-    );
+    let summary = summary_line(claims.len(), report.passed, report.failed, report.human);
+    println!("wrote {index_path}: {summary}");
     if open
         && let Err(e) = open_in_browser(&index_path)
     {
