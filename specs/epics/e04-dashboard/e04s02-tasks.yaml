@@ -1,27 +1,27 @@
 story_id: e04s02
 spec: e04s02-states-highlights.md
 title: States and highlights
-status: failing
+status: passing
 bcps: 4
 tasks:
   - id: 1
     description: "Empty state with getting-started guide"
     verify: "grep -q 'Getting started' /tmp/dash-empty/index.html"
     risk: P2
-    status: failing
+    status: passing
   - id: 2
     description: "Failure state: project, error, fix hint"
     verify: >-
       grep -q 'fix' /tmp/dash-err/index.html
     risk: P2
-    status: failing
+    status: passing
   - id: 3
     description: "Human claims highlighted"
     verify: "grep -q 'human' /tmp/dash-e2e/index.html"
     risk: P3
-    status: failing
+    status: passing
   - id: 4
     description: "Guide text lives in the HTML template"
     verify: "grep -q 'Getting started' src/dashboard.rs"
     risk: P3
-    status: failing
+    status: passing
