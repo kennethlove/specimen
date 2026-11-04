@@ -1,0 +1,45 @@
+# specs/planning-context.yaml — written by elaborate-spec (build 3)
+feature_name: "grill/authoring skill (spec-time shift-left)"
+problem_statement: >
+  Specs today get written after code starts, or ad hoc. Questions a
+  senior reviewer would ask three weeks later (null fields, broken
+  callers, missing failure modes) surface as rework and extra review
+  rounds. Build 3 shifts left: a skill that takes a rough idea, asks
+  those questions in one batch, and emits a conformance-testable
+  spec — EARS + RFC 2119 claim lines with check/scope/tags — before
+  any code exists. Unanswered questions become rework; answered, the
+  throwaway diff never gets written.
+constraints:
+  - "Agent-agnostic markdown skill at skills/grill/SKILL.md, in-repo"
+  - >-
+    Emit the implemented claim format only: '- [Cn] sentence check: cmd'
+    plus 'scope: [a]' / 'tags: [t]' marker lines — the shipped
+    specimen parser is authoritative, not the ideas-file '## Cn'
+    heading style or '[test]' prefix tags
+  - "Tool gates nothing: bad checks warn, never block (anti-lock-in)"
+  - "Untagged prose allowed as context — never blocking (A3)"
+  - >-
+    Self-contained: EARS patterns, tag taxonomy, fit criteria copied
+    into the skill; private-content ideas/ referenced, not required
+  - "No new Rust code: parser already accepts what the skill emits"
+  - "A6: no test generation day one (red-test-first is a later opt-in)"
+out_of_scope:
+  - "Test generation / red-test-first (later opt-in, A6)"
+  - "Authoring UI, forms, schema server"
+  - "Specimen CLI changes — parse/check already cover the format"
+  - "Gherkin .feature files or step-definition glue"
+  - "Build-4 metrics beyond the A5 timestamp byproduct"
+  - "Measuring whether review volume dropped (that is build 4)"
+key_decisions:
+  - decision: "Skill writes the finished spec file into the repo"
+    rationale: "User chose 'Write spec file' — human then edits text directly"
+  - decision: "Grill questions asked as one batch, author answers once"
+    rationale: "User chose 'Batch questions' — fewer round trips"
+  - decision: "First-draft timestamp appended to specs/authoring-log.yaml"
+    rationale: "User chose explicit log; greppable input for build 4"
+  - decision: "A4 check verification warns only"
+    rationale: "User chose warn-only; matches 'tool gates nothing'"
+  - decision: "Implemented parser format wins over ideas-file format"
+    rationale: >-
+      specimen parse is the shipped consumer; migration cost is one
+      grep if format later unfreezes

@@ -1,0 +1,57 @@
+story_id: e03s02
+verified_at: '2026-11-03T21:16:00Z'
+verifier: verify-work
+phases:
+  smoke:
+    command: "grep -q 'authoring-log' skills/grill/SKILL.md"
+    exit_code: 0
+    note: hygiene section present
+  build:
+    command: cargo check
+    exit_code: 0
+  typecheck:
+    command: cargo check
+    exit_code: 0
+    note: no Rust change; hygiene runs shell probes from the skill
+  lint:
+    command: cargo clippy --all-targets
+    exit_code: 0
+    note: no issues found
+  tests:
+    command: sh tests/grill.sh
+    exit_code: 0
+    note: 8 greps green, set -e
+  terminal_verdict:
+    command: sh tests/grill.sh
+    exit_code: 0
+    captured_at: '2026-11-03T21:16:00Z'
+    note: >-
+      single contiguous run: grill e03s01 verifies ok,
+      grill e03s02 verifies ok
+  manual:
+    steps:
+      - step: file-path probe per skill (test -f)
+        expected: probe succeeds on an existing file
+        actual: "test -f tests/grill.sh -> probe-file-ok"
+        passed: true
+      - step: bare-command probe per skill (command -v)
+        expected: probe succeeds on a PATH command
+        actual: "command -v sh -> probe-cmd-ok"
+        passed: true
+      - step: warn-only contract — nothing gates the draft
+        expected: hygiene verbs are report/warn, never block/stop
+        actual: >-
+          skill section states "nothing blocks the draft" and
+          "never edit or drop it to silence a warning"
+        passed: true
+      - step: A5 stamp line recorded in the skill
+        expected: first_draft line format for authoring-log.yaml
+        actual: "`- first_draft: <iso8601> spec: <path>` documented"
+        passed: true
+gaps:
+  closed: true
+  notes:
+    - >-
+      A5 stamp execution is skill-authored at runtime; no sample
+      specs/authoring-log.yaml exists until the first real
+      authoring session (accepted — dogfood item).

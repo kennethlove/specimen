@@ -1,0 +1,26 @@
+story_id: e03s02
+spec: e03s02-authoring-hygiene.md
+title: Authoring hygiene
+status: passing
+bcps: 4
+tasks:
+  - id: 1
+    description: "A4: verify check targets exist, warn only"
+    verify: "grep -q 'warn' skills/grill/SKILL.md"
+    risk: P2
+    status: passing
+  - id: 2
+    description: "A4: existence probe commands in the skill"
+    verify: "grep -q 'test -f' skills/grill/SKILL.md"
+    risk: P2
+    status: passing
+  - id: 3
+    description: "A5: first-draft timestamp to authoring-log.yaml"
+    verify: "grep -q 'authoring-log' skills/grill/SKILL.md"
+    risk: P2
+    status: passing
+  - id: 4
+    description: "Tags enforced, untagged prose stays context"
+    verify: "grep -q 'context' skills/grill/SKILL.md"
+    risk: P3
+    status: passing
