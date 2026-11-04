@@ -85,6 +85,21 @@ fn dashboard_human_claim_labeled() {
 }
 
 #[test]
+fn dashboard_escapes_claim_text() {
+    let dir = std::env::temp_dir().join("specimen-dash-escape");
+    let _ = std::fs::remove_dir_all(&dir);
+    run(&[
+        "dashboard",
+        "tests/fixtures/dash-escape.md",
+        dir.to_str().expect("tmpdir"),
+    ]);
+    let page = std::fs::read_to_string(dir.join("index.html")).expect("index.html");
+    assert!(page.contains("&lt;b&gt;"), "escaped markup: {page}");
+    assert!(!page.contains("<b>"), "no raw tag: {page}");
+    assert!(page.contains("&amp;"), "escaped ampersand: {page}");
+}
+
+#[test]
 fn dashboard_counts_pass_and_fail() {
     let dir = std::env::temp_dir().join("specimen-dash-counts");
     let _ = std::fs::remove_dir_all(&dir);
