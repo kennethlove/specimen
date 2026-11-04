@@ -191,17 +191,11 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         (Some("check"), Some(path)) => run_checks(path),
-        (Some("dashboard"), Some(path)) => match args.get(3) {
-            Some(out_dir) => dashboard::run(path, out_dir),
-            None => {
-                eprintln!("usage: specimen dashboard <spec.md> <out-dir>");
-                ExitCode::from(2)
-            }
-        },
+        (Some("dashboard"), Some(path)) => dashboard::run(path, &args[3..]),
         _ => {
             eprintln!("usage: specimen parse <path>");
             eprintln!("usage: specimen check <path>");
-            eprintln!("usage: specimen dashboard <spec.md> <out-dir>");
+            eprintln!("usage: specimen dashboard <spec.md> <out-dir> [--open]");
             ExitCode::from(2)
         }
     }

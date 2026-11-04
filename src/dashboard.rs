@@ -198,7 +198,37 @@ fn page_html(claims: &[crate::Claim], fields: &[String], project: &str, r: &Repo
     .into_string()
 }
 
-pub(crate) fn run(path: &str, out_dir: &str) -> ExitCode {
+// WHY: stdlib has no "open in browser" API; the per-OS launcher is the
+// native platform feature (ladder rung 5). A failure warns only — the
+// page is already written.
+fn open_in_browser(path: &str) -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    let program = "open";
+    #[cfg(target_os = "linux")]
+    let program = "xdg-open";
+    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+    return Err("opening a browser is unsupported on this platform".to_string());
+    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    std::process::Command::new(program)
+        .arg(path)
+        .spawn()
+        .map(drop)
+        .map_err(|e| e.to_string())
+}
+
+pub(crate) fn run(path: &str, rest: &[String]) -> ExitCode {
+    // Flag anywhere after the positionals; exactly one out-dir required.
+    let open = rest.iter().any(|a| a == "--open");
+    let dirs: Vec<&str> = rest
+        .iter()
+        .filter(|a| a.as_str() != "--open")
+        .map(String::as_str)
+        .collect();
+    if dirs.len() != 1 {
+        eprintln!("usage: specimen dashboard <spec.md> <out-dir> [--open]");
+        return ExitCode::from(2);
+    }
+    let out_dir = dirs[0];
     // Config is checked before anything renders: invalid config -> exit 1,
     // no page (e04s03 §6).
     let fields = match load_fields() {
@@ -247,5 +277,10 @@ pub(crate) fn run(path: &str, out_dir: &str) -> ExitCode {
         passed = report.passed,
         failed = report.failed
     );
+    if open
+        && let Err(e) = open_in_browser(&index_path)
+    {
+        eprintln!("warning: cannot open {index_path}: {e}");
+    }
     ExitCode::SUCCESS
 }
