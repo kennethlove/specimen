@@ -3,7 +3,7 @@ use std::process::ExitCode;
 // WHY: maud over hand-built `format!` strings — compile-time HTML macros
 // with automatic escaping, which replaces the old `esc()` helper. User
 // chose maud for the dashboard templates (m01220).
-use maud::{html, DOCTYPE};
+use maud::{DOCTYPE, html};
 
 fn project_name(path: &str) -> String {
     std::path::Path::new(path)
@@ -47,10 +47,7 @@ fn load_fields() -> Result<Vec<String>, String> {
     let mut fields = Vec::new();
     for value in list {
         let Some(name) = value.as_str() else {
-            return Err(format!(
-                "{}: field entries must be strings",
-                path.display()
-            ));
+            return Err(format!("{}: field entries must be strings", path.display()));
         };
         if !VALID_FIELDS.contains(&name) {
             return Err(format!(
@@ -269,9 +266,7 @@ pub(crate) fn run(path: &str, rest: &[String]) -> ExitCode {
     }
     let summary = summary_line(claims.len(), report.passed, report.failed, report.human);
     println!("wrote {index_path}: {summary}");
-    if open
-        && let Err(e) = open_in_browser(&index_path)
-    {
+    if open && let Err(e) = open_in_browser(&index_path) {
         eprintln!("warning: cannot open {index_path}: {e}");
     }
     ExitCode::SUCCESS
