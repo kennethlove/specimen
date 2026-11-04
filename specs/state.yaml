@@ -1,30 +1,31 @@
 active_flow: release
-active_story: e03s02
+active_story: e04s03
 vcs:
   kind: jj
   workspace: .
   change: qnktyyvzuzvw
-updated: 2026-11-03
+updated: 2026-11-04
 git:
   branch: main
   hash: none
 handoff:
   last_step_completed: >-
-    release-branch: PR #3 merged squash cdd61e4f, local+origin
-    main synced, specimen-grill bookmarks deleted both sides,
-    bookkeeping commit rides next PR
+    audit-code e04: AUDIT-e04.md written (2 deferrals noted),
+    evidence e04s01-s03 recorded, epic+execution-status done
   open_decisions:
     - Scope line vs tag may be one concept (glossary flag)
     - Check timeout policy undecided (e01s02 §19)
     - Grill prompt wording and log-count fields (e03 §19)
+    - Dashboard summary line wording (e04s01 §19)
+    - Config field aliases e.g. all (e04s03 §19)
   required_reading:
     - specs/tech-architecture/MVP-TEST_PLAN_LATEST.md
     - specs/verifications/
     - specs/security/REVIEW.md
-    - specs/verifications/AUDIT-e03.md
-    - specs/verifications/e03s01-verify.yaml
+    - specs/verifications/AUDIT-e04.md
+    - specs/verifications/e04s01-verify.yaml
     - specs/traceability-matrix.json
-  next_skill: session-state
+  next_skill: release-branch
 metrics:
   skill_timings:
     develop-tdd:
