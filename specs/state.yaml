@@ -13,12 +13,23 @@ handoff:
     release-branch: PR #5 merged squash e113709, local+origin
     main synced, specimen-maud deleted both sides; no queued
     work — maud templates + dashboard --open shipped
+  decided:
+    - '2026-11-04: scope line vs [out-of-scope] tag — keep both until
+      first review cycle shows one unused (revisit then)'
+    - '2026-11-04: check timeout — none until a hang is observed'
+    - '2026-11-04: grill overwrite — explicit `overwrite <path>? [y/N]`
+      prompt; skills/grill updated'
+    - '2026-11-04: authoring-log — record warning count per first draft;
+      skills/grill updated'
+    - '2026-11-04: dashboard summary — stdout and page unify on
+      `claims: N | passed: N | failed: N | human: N`'
+    - '2026-11-04: config field aliases — none; missing config file is
+      the show-everything path'
+    - '2026-11-04: claim-line format frozen (first real spec parsed
+      in PR #3)'
   open_decisions:
-    - Scope line vs tag may be one concept (glossary flag)
-    - Check timeout policy undecided (e01s02 §19)
-    - Grill prompt wording and log-count fields (e03 §19)
-    - Dashboard summary line wording (e04s01 §19)
-    - Config field aliases e.g. all (e04s03 §19)
+    - 'Grill question batches: include example answers? (owner: kenneth,
+      needed by: first authoring session)'
   required_reading:
     - specs/tech-architecture/MVP-TEST_PLAN_LATEST.md
     - specs/verifications/
