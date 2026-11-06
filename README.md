@@ -19,8 +19,25 @@ Or run from the repo: `cargo run -q -- <subcommand>`.
 ```sh
 specimen parse path/to/spec.md   # claims -> JSON
 specimen check path/to/spec.md   # run each claim's check
+specimen dashboard spec.md out/ [--open]  # render static HTML page
 specimen --version               # print version
 ```
+
+## Dashboard
+
+`specimen dashboard <spec.md> <out-dir> [--open]` writes
+`<out-dir>/index.html`: summary counts, one status row per claim,
+`human` tag chips, and a Getting started guide when the spec has no
+claims. Unreadable input writes the failure page and exits 1.
+`--open` opens the page in the browser after a successful write.
+
+Claim columns come from `~/.config/specimen.toml`:
+
+```toml
+fields = ["id", "sentence", "check", "status"]
+```
+
+An absent file shows all fields; `id` and `status` are always shown.
 
 `parse` prints a JSON array of claims:
 
