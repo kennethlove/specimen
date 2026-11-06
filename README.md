@@ -68,3 +68,7 @@ human reads them, and emit the coverage report.
 
 See `CONVENTIONS.md`. Planning artifacts live in `specs/`; story
 verification evidence is in `specs/verifications/`.
+
+## License
+
+Apache-2.0. See [`LICENSE`](LICENSE).
